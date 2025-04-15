@@ -70,4 +70,17 @@ class PostController extends Controller
         return $this-> storeOrUpdate($request, $students);
     }
 
+    public function destroy($id)
+    {
+        try {
+            $student = Student::findOrFail($id);
+            $student->delete();
+
+            return redirect()->route('posts.index')
+                ->with('success', 'Student succesvol verwijderd!');
+        } catch (\Exception $e) {
+            return redirect()->route('posts.index')
+                ->with('error', 'Er is een fout opgetreden bij het verwijderen van de student.');
+        }
+    }
 }
