@@ -1,3 +1,12 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+    .parent-column {
+        @apply bg-gray-100 dark:bg-gray-800 rounded-lg shadow-md p-6;
+    }
+    .student-card {
+        width: 100px !important;
+    }
+}
