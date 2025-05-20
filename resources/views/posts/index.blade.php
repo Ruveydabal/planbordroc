@@ -6,7 +6,7 @@
 <div class="bg-gray-100 dark:bg-gray-900">
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 min-h-0">
         <!-- Eerste kolom - Studenten Overzicht -->
-        <div class="studenten-kolom bg-gray-100 dark:bg-gray-700 h-[100px] overflow-y-auto px-4">
+        <div class="studenten-kolom bg-gray-100 dark:bg-gray-700 h-[300px] overflow-y-auto px-4">
             <h1 class="text-2xl font-bold mb-6 text-gray-900 dark:text-white">Studenten Overzicht</h1>
 
             @if(session('success'))
@@ -22,10 +22,10 @@
             </div>
 
             @if($students->count() > 0)
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
+                <div class="grid grid-cols-1 gap-4">
                     @foreach($students as $student)
-                        <div class="student-card bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-300 w-[100px]">
-                            <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100 truncate">{{ $student->name }}</h2>
+                        <div class="student-card bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-300 w-[400px]">
+                            <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">{{ $student->name }}</h2>
                             <div class="mt-3 flex space-x-4">
                                 <a href="{{ route('posts.edit', $student->id) }}" class="text-blue-500 hover:text-blue-700 font-bold text-sm">
                                     Bewerken
@@ -48,15 +48,24 @@
         </div>
 
         <!-- Tweede kolom -->
-        <div class="info-kolom bg-gray-100 dark:bg-gray-700 h-[100px] overflow-hidden">
+        <div class="info-kolom bg-gray-100 dark:bg-gray-700 h-[300px] overflow-hidden">
             <div class="max-w-7xl mx-auto px-4 h-full">
-                <h1 class="text-2xl font-bold mb-6 text-gray-900 dark:text-white">Tweede Kolom</h1>
+                <h1 class="text-2xl font-bold mb-6 text-gray-900 dark:text-white">Indeling Studenten</h1>
                 <!-- Hier komt de inhoud van de tweede kolom -->
+                <div class="flex flex-col items-center bg-white dark:bg-gray-900 rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow  px-4 text-lg font-semibold text-white mb-4">
+                    PraktijkHal 
+                </div>
+                <div class="flex flex-col items-center bg-white dark:bg-gray-900 rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow  px-4 text-lg font-semibold text-white mb-4">
+                    Studieplein
+                </div>
+                <div class="flex flex-col items-center bg-white dark:bg-gray-900 rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow  px-4 text-lg font-semibold text-white mb-4">
+                    Afwezig
+                </div>
             </div>
         </div>
 
         <!-- Derde kolom -->
-        <div class="info-kolom bg-gray-100 dark:bg-gray-700 h-[100px] overflow-hidden">
+        <div class="info-kolom bg-gray-100 dark:bg-gray-700 h-[300px] overflow-hidden">
             <div class="max-w-7xl mx-auto px-4 h-full">
                 <h1 class="text-2xl font-bold mb-6 text-gray-900 dark:text-white">Derde Kolom</h1>
                 <!-- Hier komt de inhoud van de derde kolom -->
