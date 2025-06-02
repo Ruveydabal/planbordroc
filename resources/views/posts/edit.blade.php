@@ -5,8 +5,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100">
-   
-
         @extends('layouts.app')
 
         @section('title', 'Student Bewerken')
@@ -56,6 +54,5 @@
             </div>
         </div>
         @endsection
-    
 </body>
 </html>
