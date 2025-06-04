@@ -16,7 +16,7 @@ return [
     |
     */
 
-    'default' => env('DB_CONNECTION', 'sqlite'),
+    'default' => env('DB_CONNECTION', 'pgsql'),
 
     /*
     |--------------------------------------------------------------------------
@@ -43,20 +43,19 @@ return [
         ],
 
         'pgsql' => [
-        'driver' => 'pgsql',
-        'host' => env('DB_HOST', '127.0.0.1'),
-        'port' => env('DB_PORT', '5432'),
-        'database' => env('DB_DATABASE', 'forge'),
-        'username' => env('DB_USERNAME', 'forge'),
-        'password' => env('DB_PASSWORD', ''),
-        'charset' => 'utf8',
-        'prefix' => '',
-        'schema' => env('DB_SCHEMA', 'Laravel'),  // or 'Laravel' if you're using that schema
-        'sslmode' => 'prefer',
+            'driver' => 'pgsql',
+            'url' => env('DATABASE_URL'),
+            'host' => env('DB_HOST'),
+            'port' => env('DB_PORT'),
+            'database' => env('DB_DATABASE'),
+            'username' => env('DB_USERNAME'),
+            'password' => env('DB_PASSWORD'),
+            'charset' => 'utf8',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'search_path' => 'public',
+            'sslmode' => 'prefer',
         ],
-
-
-
 
         'mariadb' => [
             'driver' => 'mariadb',
@@ -77,20 +76,6 @@ return [
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
         ],
-
-        'pgsql' => [
-        'driver' => 'pgsql',
-        'host' => env('DB_HOST', '127.0.0.1'),
-        'port' => env('DB_PORT', '5432'),
-        'database' => env('DB_DATABASE', 'forge'),
-        'username' => env('DB_USERNAME', 'forge'),
-        'password' => env('DB_PASSWORD', ''),
-        'charset' => 'utf8',
-        'prefix' => '',
-        'schema' => 'Laravel', // 
-        'sslmode' => 'prefer',
-        ],
-
 
         'sqlsrv' => [
             'driver' => 'sqlsrv',

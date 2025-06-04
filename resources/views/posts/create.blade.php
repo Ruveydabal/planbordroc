@@ -35,7 +35,12 @@
                                 value="{{ old('name') }}"
                                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                 placeholder="Voer de naam van de student in">
-                        </div>  
+                        </div>
+
+                        
+
+
+                       
 
                         <div class="flex items-center justify-between">
                             <a href="{{ route('posts.index') }}" 

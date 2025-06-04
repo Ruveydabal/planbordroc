@@ -42,7 +42,7 @@ class PostController extends Controller
 
     public function storeOrUpdate(Request $request, Student $student = null)
     {
-        $validated = $request-> validate([
+        $validated = $request->validate([
             'name'=> 'required|max:25'
         ]);
 
@@ -56,7 +56,7 @@ class PostController extends Controller
         }
 
         return redirect()->route('posts.index')
-            ->with('succes', $student ? 'student updated succesfully' : 'student created');
+            ->with('success', $student ? 'Student succesvol bijgewerkt' : 'Student succesvol toegevoegd');
     }
 
     public function store(Request $request)
