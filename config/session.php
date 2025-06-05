@@ -214,4 +214,8 @@ return [
 
     'partitioned' => env('SESSION_PARTITIONED_COOKIE', false),
 
+    'id_generator' => function() {
+        return (string) \Illuminate\Support\Str::uuid();
+    },
+
 ];

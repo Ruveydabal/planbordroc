@@ -20,6 +20,47 @@ Route::middleware('auth')->group(function () {
     Route::delete('/posts/{posts}', [PostController::class, 'destroy'])->name('posts.destroy');
 });
 
-
+Route::get('/health', function () {
+    try {
+        $config = config('database.connections.pgsql');
+        $connection = \DB::connection()->getPdo();
+        
+        // Test query om users te selecteren
+        $users = \DB::table('users')->select('id', 'name', 'email')->limit(5)->get();
+        
+        return response()->json([
+            'status' => 'healthy',
+            'database' => [
+                'connected' => true,
+                'host' => $config['host'],
+                'port' => $config['port'],
+                'database' => $config['database'],
+                'username' => $config['username'],
+                'driver' => $config['driver']
+            ],
+            'test_query' => [
+                'success' => true,
+                'users_count' => $users->count(),
+                'users' => $users
+            ],
+            'timestamp' => now()
+        ]);
+    } catch (\Exception $e) {
+        $config = config('database.connections.pgsql');
+        return response()->json([
+            'status' => 'unhealthy',
+            'database' => [
+                'connected' => false,
+                'host' => $config['host'],
+                'port' => $config['port'],
+                'database' => $config['database'],
+                'username' => $config['username'],
+                'driver' => $config['driver']
+            ],
+            'error' => $e->getMessage(),
+            'timestamp' => now()
+        ], 500);
+    }
+})->withoutMiddleware(['web', 'session']);
 
 require __DIR__.'/auth.php';
