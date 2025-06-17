@@ -52,6 +52,7 @@ class PostController extends Controller
         } 
         else
         {
+            $validated['location'] = 'all';
             Student::create($validated);
         }
 
@@ -81,6 +82,25 @@ class PostController extends Controller
         } catch (\Exception $e) {
             return redirect()->route('posts.index')
                 ->with('error', 'Er is een fout opgetreden bij het verwijderen van de student.');
+        }
+    }
+
+    public function updateLocation(Request $request, $id)
+    {
+        try {
+            $student = Student::findOrFail($id);
+            $student->location = $request->location;
+            $student->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Locatie succesvol bijgewerkt'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Er is een fout opgetreden bij het bijwerken van de locatie'
+            ], 500);
         }
     }
 }
