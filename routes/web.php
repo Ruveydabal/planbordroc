@@ -18,7 +18,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/posts/{posts}/edit', [PostController::class, 'edit'])->name('posts.edit');
     Route::put('/posts/{posts}', [PostController::class, 'update'])->name('posts.update');
     Route::delete('/posts/{posts}', [PostController::class, 'destroy'])->name('posts.destroy');
-    Route::post('/posts/{id}/location', [PostController::class, 'updateLocation'])->name('posts.location');
+    Route::post('/posts/{student}/location', [PostController::class, 'updateLocation'])->name('posts.updateLocation');
 });
 
 Route::get('/health', function () {

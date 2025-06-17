@@ -9,7 +9,11 @@ class Student extends Model
     protected $table = 'student';
     
     protected $fillable = [
-        'name',
-        'location'
+        'name'
     ];
+
+    public function locations()
+    {
+        return $this->belongsToMany(Location::class);
+    }
 } 

@@ -28,8 +28,8 @@
                 <div class="flex-1 overflow-y-auto ">
                     <div id="all-students" class="grid grid-cols-1 gap-4 min-h-[100px]" data-location="all">
                         @foreach($students as $student)
-                            @if(!$student->location || $student->location === 'all')
-                                <div class="student-card bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-300 w-full mb-2" data-student-id="{{ $student->id }}" data-location="{{ $student->location }}">
+                            @if($student->locations->where('name', 'all')->count() > 0)
+                                <div class="student-card bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-300 w-full mb-2" data-student-id="{{ $student->id }}" data-location="all">
                                     <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">{{ $student->name }}</h2>
                                     <div class="mt-3 flex space-x-4">
                                         <a href="{{ route('posts.edit', $student->id) }}" class="text-blue-500 hover:text-blue-700 font-bold text-sm">
@@ -59,60 +59,28 @@
             <div class="max-w-7xl mx-auto px-4 h-full">
                 <h1 class="text-2xl font-bold mb-6 text-gray-900 dark:text-white">Indeling Studenten</h1>
                 <!-- Dropzones voor kamers -->
-                <div id="kamer-PraktijkHal" class="kamer-dropzone flex flex-col items-center bg-white dark:bg-gray-900 rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow px-4 text-lg font-semibold text-white mb-4 min-h-[60px]" data-location="PraktijkHal">
-                    PraktijkHal
-                    @foreach($students as $student)
-                        @if($student->location === 'PraktijkHal')
-                            <div class="student-card bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-300 w-full mb-2" data-student-id="{{ $student->id }}" data-location="{{ $student->location }}">
-                                <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">{{ $student->name }}</h2>
-                                <div class="mt-3 flex space-x-4">
-                                    <a href="{{ route('posts.edit', $student->id) }}" class="text-blue-500 hover:text-blue-700 font-bold text-sm">
-                                        Bewerken
-                                    </a>
-                                    <button onclick="showDeleteModal({{ $student->id }})" class="text-red-500 hover:text-red-700 font-bold text-sm">
-                                        Verwijderen
-                                    </button>
-                                </div>
-                            </div>
-                        @endif
-                    @endforeach
-                </div>
-                <div id="kamer-Studieplein" class="kamer-dropzone flex flex-col items-center bg-white dark:bg-gray-900 rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow px-4 text-lg font-semibold text-white mb-4 min-h-[60px]" data-location="Studieplein">
-                    Studieplein
-                    @foreach($students as $student)
-                        @if($student->location === 'Studieplein')
-                            <div class="student-card bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-300 w-full mb-2" data-student-id="{{ $student->id }}" data-location="{{ $student->location }}">
-                                <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">{{ $student->name }}</h2>
-                                <div class="mt-3 flex space-x-4">
-                                    <a href="{{ route('posts.edit', $student->id) }}" class="text-blue-500 hover:text-blue-700 font-bold text-sm">
-                                        Bewerken
-                                    </a>
-                                    <button onclick="showDeleteModal({{ $student->id }})" class="text-red-500 hover:text-red-700 font-bold text-sm">
-                                        Verwijderen
-                                    </button>
-                                </div>
-                            </div>
-                        @endif
-                    @endforeach
-                </div>
-                <div id="kamer-Afwezig" class="kamer-dropzone flex flex-col items-center bg-white dark:bg-gray-900 rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow px-4 text-lg font-semibold text-white mb-4 min-h-[60px]" data-location="Afwezig">
-                    Afwezig
-                    @foreach($students as $student)
-                        @if($student->location === 'Afwezig')
-                            <div class="student-card bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-300 w-full mb-2" data-student-id="{{ $student->id }}" data-location="{{ $student->location }}">
-                                <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">{{ $student->name }}</h2>
-                                <div class="mt-3 flex space-x-4">
-                                    <a href="{{ route('posts.edit', $student->id) }}" class="text-blue-500 hover:text-blue-700 font-bold text-sm">
-                                        Bewerken
-                                    </a>
-                                    <button onclick="showDeleteModal({{ $student->id }})" class="text-red-500 hover:text-red-700 font-bold text-sm">
-                                        Verwijderen
-                                    </button>
-                                </div>
-                            </div>
-                        @endif
-                    @endforeach
-                </div>
+                @foreach($locations as $location)
+                    @if($location->name !== 'all')
+                        <div id="kamer-{{ $location->name }}" class="kamer-dropzone flex flex-col items-center bg-white dark:bg-gray-900 rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow px-4 text-lg font-semibold text-white mb-4 min-h-[60px]" data-location="{{ $location->name }}">
+                            {{ $location->display_name }}
+                            @foreach($students as $student)
+                                @if($student->locations->where('name', $location->name)->count() > 0)
+                                    <div class="student-card bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-300 w-full mb-2" data-student-id="{{ $student->id }}" data-location="{{ $location->name }}">
+                                        <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">{{ $student->name }}</h2>
+                                        <div class="mt-3 flex space-x-4">
+                                            <a href="{{ route('posts.edit', $student->id) }}" class="text-blue-500 hover:text-blue-700 font-bold text-sm">
+                                                Bewerken
+                                            </a>
+                                            <button onclick="showDeleteModal({{ $student->id }})" class="text-red-500 hover:text-red-700 font-bold text-sm">
+                                                Verwijderen
+                                            </button>
+                                        </div>
+                                    </div>
+                                @endif
+                            @endforeach
+                        </div>
+                    @endif
+                @endforeach
             </div>
         </div>
 
@@ -161,55 +129,75 @@
         modal.classList.add('hidden');
     }
 
-    // Drag & drop functionaliteit
     document.addEventListener('DOMContentLoaded', function() {
-        // Maak de kamers tot dropzones
-        ['PraktijkHal', 'Studieplein', 'Afwezig'].forEach(function(kamer) {
-            new Sortable(document.getElementById('kamer-' + kamer), {
-                group: 'students',
-                animation: 150,
-                onAdd: function (evt) {
-                    const studentCard = evt.item;
-                    const studentId = studentCard.getAttribute('data-student-id');
-                    const newLocation = kamer;
-                    // AJAX call om locatie te updaten
-                    fetch(`/posts/${studentId}/location`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                        },
-                        body: JSON.stringify({ location: newLocation })
-                    }).then(response => {
-                        if (!response.ok) {
-                            alert('Kon locatie niet bijwerken!');
-                        }
-                    });
-                }
-            });
+        const studentCards = document.querySelectorAll('.student-card');
+        const dropzones = document.querySelectorAll('.kamer-dropzone');
+
+        studentCards.forEach(card => {
+            card.setAttribute('draggable', true);
+            card.addEventListener('dragstart', handleDragStart);
+            card.addEventListener('dragend', handleDragEnd);
         });
-        // Maak de algemene studentenlijst ook een Sortable (voor terugzetten)
-        new Sortable(document.getElementById('all-students'), {
-            group: 'students',
-            animation: 150,
-            onAdd: function (evt) {
-                const studentCard = evt.item;
-                const studentId = studentCard.getAttribute('data-student-id');
-                // AJAX call om locatie te updaten naar 'all'
-                fetch(`/posts/${studentId}/location`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                    },
-                    body: JSON.stringify({ location: 'all' })
-                }).then(response => {
-                    if (!response.ok) {
-                        alert('Kon locatie niet bijwerken!');
+
+        dropzones.forEach(zone => {
+            zone.addEventListener('dragover', handleDragOver);
+            zone.addEventListener('drop', handleDrop);
+        });
+
+        function handleDragStart(e) {
+            e.target.classList.add('opacity-50');
+            e.dataTransfer.setData('text/plain', e.target.dataset.studentId);
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('opacity-50');
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            const studentId = e.dataTransfer.getData('text/plain');
+            const newLocation = e.target.closest('.kamer-dropzone').dataset.location;
+            const studentCard = document.querySelector(`[data-student-id="${studentId}"]`);
+            const oldLocation = studentCard.dataset.location;
+
+            // Update de locatie via AJAX
+            fetch(`/posts/${studentId}/location`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({ location: newLocation })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Verwijder de kaart van de oude locatie
+                    const oldDropzone = document.querySelector(`#kamer-${oldLocation}`);
+                    if (oldDropzone) {
+                        oldDropzone.removeChild(studentCard);
                     }
-                });
-            }
-        });
+
+                    // Voeg de kaart toe aan de nieuwe locatie
+                    const newDropzone = document.querySelector(`#kamer-${newLocation}`);
+                    if (newDropzone) {
+                        studentCard.dataset.location = newLocation;
+                        newDropzone.appendChild(studentCard);
+                    }
+
+                    // Herlaad de pagina om de wijzigingen te tonen
+                    window.location.reload();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Er is een fout opgetreden bij het verplaatsen van de student.');
+            });
+        }
     });
 </script>
 @endsection

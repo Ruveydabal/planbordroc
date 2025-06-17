@@ -2,15 +2,18 @@
 namespace App\Http\Controllers;
 
 use App\Models\Student;
+use App\Models\Location;
 use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
     public function students() 
     {
-        $students = Student::all();
+        $students = Student::with('locations')->get();
+        $locations = Location::all();
         return view('posts.index', [
-            'students' => $students
+            'students' => $students,
+            'locations' => $locations
         ]);
     }
 
@@ -33,8 +36,7 @@ class PostController extends Controller
 
     public function edit($id)
     {
-        $student = Student::find($id);
-
+        $student = Student::with('locations')->find($id);
         return view('posts.edit', [
             'student' => $student
         ]);
@@ -52,8 +54,12 @@ class PostController extends Controller
         } 
         else
         {
-            $validated['location'] = 'all';
-            Student::create($validated);
+            $student = Student::create($validated);
+            // Standaard locatie 'all' toewijzen
+            $allLocation = Location::where('name', 'all')->first();
+            if ($allLocation) {
+                $student->locations()->attach($allLocation->id);
+            }
         }
 
         return redirect()->route('posts.index')
@@ -62,13 +68,13 @@ class PostController extends Controller
 
     public function store(Request $request)
     {
-        return $this-> storeOrUpdate($request);
+        return $this->storeOrUpdate($request);
     }
 
     public function update(Request $request, string $id)
     {
         $students = Student::findOrFail($id);
-        return $this-> storeOrUpdate($request, $students);
+        return $this->storeOrUpdate($request, $students);
     }
 
     public function destroy($id)
@@ -89,8 +95,13 @@ class PostController extends Controller
     {
         try {
             $student = Student::findOrFail($id);
-            $student->location = $request->location;
-            $student->save();
+            $location = Location::where('name', $request->location)->firstOrFail();
+            
+            // Verwijder alle bestaande locaties
+            $student->locations()->detach();
+            
+            // Voeg de nieuwe locatie toe
+            $student->locations()->attach($location->id);
 
             return response()->json([
                 'success' => true,
