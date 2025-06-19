@@ -114,4 +114,17 @@ class PostController extends Controller
             ], 500);
         }
     }
+
+    public function resetAllToOverview()
+    {
+        $allLocation = \App\Models\Location::where('name', 'all')->first();
+        if (!$allLocation) {
+            return redirect()->route('posts.index')->with('error', 'Locatie "all" niet gevonden.');
+        }
+        $students = \App\Models\Student::all();
+        foreach ($students as $student) {
+            $student->locations()->sync([$allLocation->id]);
+        }
+        return redirect()->route('posts.index')->with('success', 'Alle studenten zijn teruggezet naar het overzicht.');
+    }
 }

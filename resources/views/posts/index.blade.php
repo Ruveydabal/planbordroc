@@ -18,15 +18,21 @@
                 </div>
             @endif
 
-            <div class="mb-4">
-                <a href="{{ route('posts.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            <div class="mb-4 flex gap-2">
+                <a href="{{ route('posts.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-center w-56">
                     Nieuwe Student Toevoegen
                 </a>
+                <form action="{{ route('posts.resetAll') }}" method="POST" onsubmit="return confirm('Weet je zeker dat je alle studenten terug wilt zetten naar het overzicht?');">
+                    @csrf
+                    <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                        Alle studenten terug naar overzicht
+                    </button>
+                </form>
             </div>
 
             @if($students->count() > 0)
                 <div class="flex-1 overflow-y-auto ">
-                    <div id="all-students" class="grid grid-cols-1 gap-4 min-h-[100px]" data-location="all">
+                    <div id="all-students" class="kamer-dropzone grid grid-cols-1 gap-4 min-h-[100px]" data-location="all">
                         @foreach($students as $student)
                             @if($student->locations->where('name', 'all')->count() > 0)
                                 <div class="student-card bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-300 w-full mb-2" data-student-id="{{ $student->id }}" data-location="all">

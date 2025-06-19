@@ -19,6 +19,7 @@ Route::middleware('auth')->group(function () {
     Route::put('/posts/{posts}', [PostController::class, 'update'])->name('posts.update');
     Route::delete('/posts/{posts}', [PostController::class, 'destroy'])->name('posts.destroy');
     Route::post('/posts/{student}/location', [PostController::class, 'updateLocation'])->name('posts.updateLocation');
+    Route::post('/posts/reset-all', [PostController::class, 'resetAllToOverview'])->name('posts.resetAll');
 });
 
 Route::get('/health', function () {
