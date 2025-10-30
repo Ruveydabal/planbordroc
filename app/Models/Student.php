@@ -9,7 +9,8 @@ class Student extends Model
     protected $table = 'student';
     
     protected $fillable = [
-        'name'
+        'name',
+        'opmerkingen',
     ];
 
     public function locations()

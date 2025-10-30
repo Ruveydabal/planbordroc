@@ -29,7 +29,7 @@
                         <strong>Deze student hoort bij klas(sen):</strong>
                         <ul class="ml-4 list-disc">
                             @foreach($student->classrooms as $classroom)
-                                <li>{{ $classroom->name }} <span class="text-gray-400 text-xs">(id: {{ $classroom->id }})</span></li>
+                                <li>{{ $classroom->name }}</li>
                             @endforeach
                         </ul>
                     </div>
