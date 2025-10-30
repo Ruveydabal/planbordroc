@@ -54,7 +54,7 @@ class PostController extends Controller
     {
         $validated = $request->validate([
             'name'=> 'required|max:25',
-            'classroom_id' => 'required|exists:classroom,id'
+            'classroom_id' => 'required|exists:classrooms,id'
         ]);
 
         if($student)
