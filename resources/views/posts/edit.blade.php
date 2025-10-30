@@ -44,10 +44,21 @@
                                class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
                                 Terug naar Overzicht
                             </a>
-                            <button type="submit" 
-                                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                                Student Bijwerken
-                            </button>
+                            <div class="flex gap-2">
+                                <button type="submit" 
+                                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                                    Student Bijwerken
+                                </button>
+                                @auth
+                                <form action="{{ route('posts.destroy', $student->id) }}" method="POST" onsubmit="return confirm('Weet je zeker dat je deze student wilt verwijderen? Dit kan niet ongedaan worden gemaakt.');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                                        Verwijderen
+                                    </button>
+                                </form>
+                                @endauth
+                            </div>
                         </div>
                     </form>
                 </div>
