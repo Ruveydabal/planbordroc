@@ -15,4 +15,9 @@ class Location extends Model
     {
         return $this->belongsToMany(Student::class);
     }
+
+    public function portfolios()
+    {
+        return $this->belongsToMany(\App\Models\Portfolio::class, 'location_portfolio');
+    }
 }

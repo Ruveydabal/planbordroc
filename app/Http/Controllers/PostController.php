@@ -3,6 +3,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Student;
 use App\Models\Location;
+use App\Models\Portfolio;
+use App\Models\Classroom;
 use Illuminate\Http\Request;
 
 class PostController extends Controller
@@ -11,15 +13,20 @@ class PostController extends Controller
     {
         $students = Student::with('locations')->get();
         $locations = Location::all();
+        $portfolios = Portfolio::with('locations')->orderBy('sort_order')->get();
+        $classrooms = Classroom::with('students')->get();
         return view('posts.index', [
             'students' => $students,
-            'locations' => $locations
+            'locations' => $locations,
+            'portfolios' => $portfolios,
+            'classrooms' => $classrooms
         ]);
     }
 
-    public function create()
+    public function create(Request $request)
     {
-        return view('posts.create');
+        $classroomId = $request->get('classroom_id');
+        return view('posts.create', compact('classroomId'));
     }
 
     // public function store(Request $request)
@@ -55,6 +62,15 @@ class PostController extends Controller
         else
         {
             $student = Student::create($validated);
+            
+            // Voeg student toe aan klas als classroom_id is meegegeven
+            if ($request->has('classroom_id')) {
+                $classroom = Classroom::find($request->classroom_id);
+                if ($classroom) {
+                    $student->classrooms()->attach($classroom->id);
+                }
+            }
+            
             // Standaard locatie 'all' toewijzen
             $allLocation = Location::where('name', 'all')->first();
             if ($allLocation) {

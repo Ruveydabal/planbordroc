@@ -16,4 +16,9 @@ class Student extends Model
     {
         return $this->belongsToMany(Location::class);
     }
+
+    public function classrooms()
+    {
+        return $this->belongsToMany(\App\Models\Classroom::class, 'classroom_student');
+    }
 } 

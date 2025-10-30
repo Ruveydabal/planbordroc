@@ -1,5 +1,7 @@
 <?php
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\PortfolioController;
+use App\Http\Controllers\ClassroomController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -20,6 +22,25 @@ Route::middleware('auth')->group(function () {
     Route::delete('/posts/{posts}', [PostController::class, 'destroy'])->name('posts.destroy');
     Route::post('/posts/{student}/location', [PostController::class, 'updateLocation'])->name('posts.updateLocation');
     Route::post('/posts/reset-all', [PostController::class, 'resetAllToOverview'])->name('posts.resetAll');
+
+    // Portfolio routes
+    // Optioneel index indien gebruikt
+    // Route::get('/portfolios', [PortfolioController::class, 'index'])->name('portfolios.index');
+    Route::get('/portfolios/create', [PortfolioController::class, 'create'])->name('portfolios.create');
+    Route::post('/portfolios', [PortfolioController::class, 'store'])->name('portfolios.store');
+    Route::get('/portfolios/{portfolio}/edit', [PortfolioController::class, 'edit'])->name('portfolios.edit');
+    Route::put('/portfolios/{portfolio}', [PortfolioController::class, 'update'])->name('portfolios.update');
+    Route::delete('/portfolios/{portfolio}', [PortfolioController::class, 'destroy'])->name('portfolios.destroy');
+    Route::post('/portfolios/reorder', [PortfolioController::class, 'reorder'])->name('portfolios.reorder');
+    Route::post('/portfolios/{portfolio}/location', [PortfolioController::class, 'updateLocation'])->name('portfolios.updateLocation');
+    Route::post('/portfolios/reset-all', [PortfolioController::class, 'resetAllToOverview'])->name('portfolios.resetAll');
+
+    // Classrooms
+    Route::post('/classrooms', [ClassroomController::class, 'store'])->name('classrooms.store');
+    Route::put('/classrooms/{classroom}', [ClassroomController::class, 'update'])->name('classrooms.update');
+    Route::delete('/classrooms/{classroom}', [ClassroomController::class, 'destroy'])->name('classrooms.destroy');
+    Route::post('/classrooms/{classroom}/assign', [ClassroomController::class, 'assignStudent'])->name('classrooms.assign');
+    Route::post('/classrooms/{classroom}/remove', [ClassroomController::class, 'removeStudent'])->name('classrooms.remove');
 });
 
 Route::get('/health', function () {
