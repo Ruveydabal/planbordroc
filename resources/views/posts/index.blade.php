@@ -58,6 +58,16 @@
                                         @foreach($classroom->students as $student)
                                             <div class="student-card bg-gray-100 dark:bg-gray-700 rounded p-2 text-sm cursor-move" data-student-id="{{ $student->id }}" data-classroom-id="{{ $classroom->id }}">
                                                 <span class="text-gray-800 dark:text-gray-200">{{ $student->name }}</span>
+                                                @auth
+                                                    <div class="mt-3 flex space-x-4">
+                                                        <a href="{{ route('posts.edit', $student->id) }}" class="text-blue-500 hover:text-blue-700 font-bold text-sm">
+                                                            Bewerken
+                                                        </a>
+                                                        <button onclick="showDeleteModal({{ $student->id }})" class="text-red-500 hover:text-red-700 font-bold text-sm">
+                                                            Verwijderen
+                                                        </button>
+                                                    </div>
+                                                @endauth
                                             </div>
                                         @endforeach
                                     </div>
