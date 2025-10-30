@@ -531,8 +531,8 @@
                 body: JSON.stringify({ classroom_id: classroomId })
             })
             .then(response => {
-                console.log('Response status:', response.status);
                 if (response.ok) {
+                    window.location.reload();
                     return response.json();
                 } else {
                     throw new Error('Server error: ' + response.status);
