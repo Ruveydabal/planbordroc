@@ -31,19 +31,14 @@
                     @if($students->count() > 0)
                         @foreach($students as $student)
                             @if($student->classrooms->count() == 0 && $student->locations->where('name', 'all')->count() > 0)
-                                <div class="student-card bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-300 w-full mb-2" data-student-id="{{ $student->id }}" data-location="all">
+                                <a href="{{ route('posts.edit', $student->id) }}" class="block student-card bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-300 w-full mb-2 cursor-pointer" data-student-id="{{ $student->id }}" data-location="all">
                                     <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">{{ $student->name }}</h2>
                                     @auth
                                         <div class="mt-3 flex space-x-4">
-                                            <a href="{{ route('posts.edit', $student->id) }}" class="text-blue-500 hover:text-blue-700 font-bold text-sm">
-                                                Bewerken
-                                            </a>
-                                            <button onclick="showDeleteModal({{ $student->id }})" class="text-red-500 hover:text-red-700 font-bold text-sm">
-                                                Verwijderen
-                                            </button>
+                                            <button onclick="event.stopPropagation(); showDeleteModal({{ $student->id }})" type="button" class="text-red-500 hover:text-red-700 font-bold text-sm">Verwijderen</button>
                                         </div>
                                     @endauth
-                                </div>
+                                </a>
                             @endif
                         @endforeach
                     @endif
@@ -56,19 +51,14 @@
                                 @if($classroom->students->count() > 0)
                                     <div class="space-y-2" id="classroom-students-{{ $classroom->id }}">
                                         @foreach($classroom->students as $student)
-                                            <div class="student-card bg-gray-100 dark:bg-gray-700 rounded p-2 text-sm cursor-move" data-student-id="{{ $student->id }}" data-classroom-id="{{ $classroom->id }}">
+                                            <a href="{{ route('posts.edit', $student->id) }}" class="block student-card bg-gray-100 dark:bg-gray-700 rounded p-2 text-sm cursor-pointer cursor-move" data-student-id="{{ $student->id }}" data-classroom-id="{{ $classroom->id }}">
                                                 <span class="text-gray-800 dark:text-gray-200">{{ $student->name }}</span>
                                                 @auth
                                                     <div class="mt-3 flex space-x-4">
-                                                        <a href="{{ route('posts.edit', $student->id) }}" class="text-blue-500 hover:text-blue-700 font-bold text-sm">
-                                                            Bewerken
-                                                        </a>
-                                                        <button onclick="showDeleteModal({{ $student->id }})" class="text-red-500 hover:text-red-700 font-bold text-sm">
-                                                            Verwijderen
-                                                        </button>
+                                                        <button onclick="event.stopPropagation(); showDeleteModal({{ $student->id }})" type="button" class="text-red-500 hover:text-red-700 font-bold text-sm">Verwijderen</button>
                                                     </div>
                                                 @endauth
-                                            </div>
+                                            </a>
                                         @endforeach
                                     </div>
                                 @else
