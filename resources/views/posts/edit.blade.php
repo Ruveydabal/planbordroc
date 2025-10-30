@@ -52,6 +52,11 @@
                                    required>
                         </div>
 
+                        <div class="mb-4">
+                            <label for="opmerkingen" class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Opmerkingen (optioneel):</label>
+                            <textarea name="opmerkingen" id="opmerkingen" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline">{{ old('opmerkingen', $student->opmerkingen) }}</textarea>
+                        </div>
+
                         <div class="flex items-center justify-between">
                             <a href="{{ route('posts.index') }}" 
                                class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">

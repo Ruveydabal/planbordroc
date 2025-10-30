@@ -56,17 +56,24 @@ class PostController extends Controller
     {
         $validated = $request->validate([
             'name'=> 'required|max:25',
-            'classroom_id' => 'required|exists:classrooms,id'
+            'classroom_id' => 'required|exists:classrooms,id',
+            'opmerkingen' => 'nullable|string',
         ]);
 
         if($student)
         {
-            $student->update(['name' => $validated['name']]);
+            $student->update([
+                'name' => $validated['name'],
+                'opmerkingen' => $validated['opmerkingen'] ?? null
+            ]);
             // Bijwerken classroom: optioneel (optioneel toevoegen)
         } 
         else
         {
-            $student = Student::create(['name' => $validated['name']]);
+            $student = Student::create([
+                'name' => $validated['name'],
+                'opmerkingen' => $validated['opmerkingen'] ?? null
+            ]);
             $classroom = Classroom::find($validated['classroom_id']);
             if ($classroom) {
                 $student->classrooms()->attach($classroom->id);
