@@ -112,6 +112,8 @@ class PostController extends Controller
             
             // Verwijder alle bestaande locaties
             $student->locations()->detach();
+            // Verwijder uit alle klassen zodra hij naar een locatie wordt versleept
+            $student->classrooms()->detach();
             
             // Voeg de nieuwe locatie toe
             $student->locations()->attach($location->id);
