@@ -37,10 +37,16 @@
                                 placeholder="Voer de naam van de student in">
                         </div>
 
-                        
+                        <div class="mb-4">
+                            <label for="classroom_id" class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Klas<span class="text-red-500">*</span>:</label>
+                            <select name="classroom_id" id="classroom_id" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                <option value="" disabled selected>Kies een klas...</option>
+                                @foreach($classrooms as $classroom)
+                                    <option value="{{ $classroom->id }}" {{ (old('classroom_id', (isset($classroomId) ? $classroomId : null)) == $classroom->id) ? 'selected' : '' }}>{{ $classroom->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
 
-
-                       
 
                         <div class="flex items-center justify-between">
                             <a href="{{ route('posts.index') }}" 

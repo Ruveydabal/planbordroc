@@ -26,7 +26,8 @@ class PostController extends Controller
     public function create(Request $request)
     {
         $classroomId = $request->get('classroom_id');
-        return view('posts.create', compact('classroomId'));
+        $classrooms = \App\Models\Classroom::all();
+        return view('posts.create', compact('classroomId', 'classrooms'));
     }
 
     // public function store(Request $request)
@@ -52,26 +53,22 @@ class PostController extends Controller
     public function storeOrUpdate(Request $request, Student $student = null)
     {
         $validated = $request->validate([
-            'name'=> 'required|max:25'
+            'name'=> 'required|max:25',
+            'classroom_id' => 'required|exists:classroom,id'
         ]);
 
         if($student)
         {
-            $student->update($validated);
+            $student->update(['name' => $validated['name']]);
+            // Bijwerken classroom: optioneel (optioneel toevoegen)
         } 
         else
         {
-            $student = Student::create($validated);
-            
-            // Voeg student toe aan klas als classroom_id is meegegeven
-            if ($request->has('classroom_id')) {
-                $classroom = Classroom::find($request->classroom_id);
-                if ($classroom) {
-                    $student->classrooms()->attach($classroom->id);
-                }
+            $student = Student::create(['name' => $validated['name']]);
+            $classroom = Classroom::find($validated['classroom_id']);
+            if ($classroom) {
+                $student->classrooms()->attach($classroom->id);
             }
-            
-            // Standaard locatie 'all' toewijzen
             $allLocation = Location::where('name', 'all')->first();
             if ($allLocation) {
                 $student->locations()->attach($allLocation->id);

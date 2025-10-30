@@ -30,7 +30,7 @@
                 <div id="all-students" class="kamer-dropzone grid grid-cols-1 gap-4 min-h-[100px]" data-location="all">
                     @if($students->count() > 0)
                         @foreach($students as $student)
-                            @if($student->locations->where('name', 'all')->count() > 0)
+                            @if($student->classrooms->count() == 0 && $student->locations->where('name', 'all')->count() > 0)
                                 <div class="student-card bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-300 w-full mb-2" data-student-id="{{ $student->id }}" data-location="all">
                                     <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">{{ $student->name }}</h2>
                                     @auth
