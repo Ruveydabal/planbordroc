@@ -33,11 +33,6 @@
                             @if($student->classrooms->count() == 0 && $student->locations->where('name', 'all')->count() > 0)
                                 <a href="{{ route('posts.edit', $student->id) }}" class="block student-card bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-300 w-full mb-2 cursor-pointer" data-student-id="{{ $student->id }}" data-location="all">
                                     <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">{{ $student->name }}</h2>
-                                    @auth
-                                        <div class="mt-3 flex space-x-4">
-                                            <button onclick="event.stopPropagation(); showDeleteModal({{ $student->id }})" type="button" class="text-red-500 hover:text-red-700 font-bold text-sm">Verwijderen</button>
-                                        </div>
-                                    @endauth
                                 </a>
                             @endif
                         @endforeach
@@ -53,11 +48,6 @@
                                         @foreach($classroom->students as $student)
                                             <a href="{{ route('posts.edit', $student->id) }}" class="block student-card bg-gray-100 dark:bg-gray-700 rounded p-2 text-sm cursor-pointer cursor-move" data-student-id="{{ $student->id }}" data-classroom-id="{{ $classroom->id }}">
                                                 <span class="text-gray-800 dark:text-gray-200">{{ $student->name }}</span>
-                                                @auth
-                                                    <div class="mt-3 flex space-x-4">
-                                                        <button onclick="event.stopPropagation(); showDeleteModal({{ $student->id }})" type="button" class="text-red-500 hover:text-red-700 font-bold text-sm">Verwijderen</button>
-                                                    </div>
-                                                @endauth
                                             </a>
                                         @endforeach
                                     </div>
