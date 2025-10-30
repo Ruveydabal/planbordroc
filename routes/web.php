@@ -22,6 +22,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/posts/{posts}', [PostController::class, 'destroy'])->name('posts.destroy');
     Route::post('/posts/{student}/location', [PostController::class, 'updateLocation'])->name('posts.updateLocation');
     Route::post('/posts/reset-all', [PostController::class, 'resetAllToOverview'])->name('posts.resetAll');
+    Route::post('/posts/{student}/classroom', [PostController::class, 'updateClassroom'])->name('posts.updateClassroom');
 
     // Portfolio routes
     // Optioneel index indien gebruikt

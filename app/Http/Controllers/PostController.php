@@ -130,6 +130,33 @@ class PostController extends Controller
         }
     }
 
+    public function updateClassroom(Request $request, $id)
+    {
+        try {
+            $request->validate([
+                'classroom_id' => 'required|exists:classrooms,id'
+            ]);
+            $student = Student::findOrFail($id);
+            $classroomId = $request->classroom_id;
+            $student->classrooms()->sync([$classroomId]);
+            // Optioneel: locatie weer op 'all' zetten, als gewenst
+            $allLocation = \App\Models\Location::where('name', 'all')->first();
+            if ($allLocation) {
+                $student->locations()->sync([$allLocation->id]);
+            }
+            return response()->json([
+                'success' => true,
+                'student_name' => $student->name,
+                'message' => 'Student weer aan klas gekoppeld.'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Fout bij koppelen student aan klas'
+            ], 500);
+        }
+    }
+
     public function resetAllToOverview()
     {
         $allLocation = \App\Models\Location::where('name', 'all')->first();
