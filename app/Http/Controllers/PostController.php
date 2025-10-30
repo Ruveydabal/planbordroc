@@ -44,9 +44,11 @@ class PostController extends Controller
 
     public function edit($id)
     {
-        $student = Student::with('locations')->find($id);
+        $student = Student::with('locations', 'classrooms')->find($id);
+        $classrooms = Classroom::all();
         return view('posts.edit', [
-            'student' => $student
+            'student' => $student,
+            'classrooms' => $classrooms,
         ]);
     }
 

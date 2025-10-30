@@ -24,6 +24,19 @@
                     </div>
                 @endif
 
+                @if($student->classrooms->count() > 0)
+                    <div class="mb-4 p-4 bg-blue-100 dark:bg-blue-900 rounded-lg text-blue-800 dark:text-blue-200">
+                        <strong>Deze student hoort bij klas(sen):</strong>
+                        <ul class="ml-4 list-disc">
+                            @foreach($student->classrooms as $classroom)
+                                <li>{{ $classroom->name }} <span class="text-gray-400 text-xs">(id: {{ $classroom->id }})</span></li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @else
+                    <div class="mb-4 p-4 bg-yellow-100 dark:bg-yellow-700 rounded-lg text-yellow-900 dark:text-yellow-200">Deze student hoort momenteel bij geen enkele klas.</div>
+                @endif
+
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
                     <form method="POST" action="{{ route('posts.update', $student->id) }}">
                         @csrf
