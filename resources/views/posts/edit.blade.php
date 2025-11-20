@@ -37,8 +37,8 @@
                     <div class="mb-4 p-4 bg-yellow-100 dark:bg-yellow-700 rounded-lg text-yellow-900 dark:text-yellow-200">Deze student hoort momenteel bij geen enkele klas.</div>
                 @endif
 
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-                    <form method="POST" action="{{ route('posts.update', $student->id) }}">
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 space-y-4">
+                    <form id="student-update-form" method="POST" action="{{ route('posts.update', $student->id) }}">
                         @csrf
                         @method('PUT')
                         <div class="mb-4">
@@ -53,32 +53,44 @@
                         </div>
 
                         <div class="mb-4">
+                            <label for="classroom_id" class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Klas:</label>
+                            <select name="classroom_id" id="classroom_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                <option value="">{{ __('Geen klas') }}</option>
+                                @foreach($classrooms as $classroom)
+                                    <option value="{{ $classroom->id }}" {{ (int) old('classroom_id', optional($student->classrooms->first())->id) === $classroom->id ? 'selected' : '' }}>
+                                        {{ $classroom->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="mb-4">
                             <label for="opmerkingen" class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Opmerkingen (optioneel):</label>
                             <textarea name="opmerkingen" id="opmerkingen" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline">{{ old('opmerkingen', $student->opmerkingen) }}</textarea>
                         </div>
-
-                        <div class="flex items-center justify-between">
-                            <a href="{{ route('posts.index') }}" 
-                               class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                                Terug naar Overzicht
-                            </a>
-                            <div class="flex gap-2">
-                                <button type="submit" 
-                                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                                    Student Bijwerken
-                                </button>
-                                @auth
-                                <form action="{{ route('posts.destroy', $student->id) }}" method="POST" onsubmit="return confirm('Weet je zeker dat je deze student wilt verwijderen? Dit kan niet ongedaan worden gemaakt.');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                                        Verwijderen
-                                    </button>
-                                </form>
-                                @endauth
-                            </div>
-                        </div>
                     </form>
+
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <a href="{{ route('posts.index') }}" 
+                           class="bg-gray-500 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                            Terug naar Overzicht
+                        </a>
+                        <div class="flex gap-2">
+                            <button type="submit" form="student-update-form"
+                                    class="bg-blue-500 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                                Student Bijwerken
+                            </button>
+                            @auth
+                            <form action="{{ route('posts.destroy', $student->id) }}" method="POST" onsubmit="return confirm('Weet je zeker dat je deze student wilt verwijderen? Dit kan niet ongedaan worden gemaakt?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                                    Verwijderen
+                                </button>
+                            </form>
+                            @endauth
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

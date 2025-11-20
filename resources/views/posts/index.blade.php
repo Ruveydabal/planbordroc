@@ -5,12 +5,31 @@
 @section('content')
 <head>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <style>
+        .classroom-color-card {
+            background-color: var(--classroom-bg, #fff);
+            border-left: 4px solid var(--classroom-border, #e5e7eb);
+            color: var(--classroom-text, #1f2937);
+        }
+
+        .dark .classroom-color-card {
+            background-color: var(--classroom-bg-dark, #1f2937);
+            border-color: var(--classroom-border-dark, #374151);
+            color: var(--classroom-text-dark, #f3f4f6);
+        }
+    </style>
 </head>
 <div class="bg-gray-100 dark:bg-gray-900">
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 min-h-[650px]">
         <!-- Eerste kolom - Studenten Overzicht -->
         <div class="studenten-kolom bg-gray-100 dark:bg-gray-700 h-[600px] flex flex-col px-4">
             <h1 class="text-2xl font-bold mb-6 text-gray-900 dark:text-white">Studenten Overzicht</h1>
+
+            @if(session('success'))
+                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
+                    <span class="block sm:inline">{{ session('success') }}</span>
+                </div>
+            @endif
 
             @auth
                 <div class="mb-4 flex gap-2 items-center">
@@ -40,32 +59,118 @@
                     
                     <!-- Klassen blokken - altijd zichtbaar -->
                     @if(isset($classrooms) && $classrooms->count() > 0)
+                        @php
+                            $classroomPalette = [
+                                [
+                                    'bg' => '#d96500',
+                                    'border' => '#fc7703',
+                                    'text' => '#000000',
+                                    'bg_dark' => '#000000',
+                                    'border_dark' => '#000000',
+                                    'text_dark' => '#000000',
+                                ],
+                                [
+                                    'bg' => '#A6A605',
+                                    'border' => '#d4d402',
+                                    'text' => '#000000',
+                                    'bg_dark' => '#000000',
+                                    'border_dark' => '#000000',
+                                    'text_dark' => '#000000',
+                                ],
+                                [
+                                    'bg' => '#056da6',
+                                    'border' => '#0798e6',
+                                    'text' => '#000000',
+                                    'bg_dark' => '#000000',
+                                    'border_dark' => '#000000',
+                                    'text_dark' => '#000000',
+                                ],
+                                [
+                                    'bg' => '#640cb0',
+                                    'border' => '#8507f2',
+                                    'text' => '#000000',
+                                    'bg_dark' => '#000000',
+                                    'border_dark' => '#000000',
+                                    'text_dark' => '#000000',
+                                ],
+                                [
+                                    'bg' => '#ba0f9e',
+                                    'border' => '#f707cf',
+                                    'text' => '#000000',
+                                    'bg_dark' => '#000000',
+                                    'border_dark' => '#000000',
+                                    'text_dark' => '#000000',
+                                ],
+                                [
+                                    'bg' => '#b31961',
+                                    'border' => '#f0167b',
+                                    'text' => '#000000',
+                                    'bg_dark' => '#000000',
+                                    'border_dark' => '#000000',
+                                    'text_dark' => '#000000',
+                                ],
+                                [
+                                    'bg' => '#3a8717',
+                                    'border' => '#5ae619',
+                                    'text' => '#000000',
+                                    'bg_dark' => '#000000',
+                                    'border_dark' => '#000000',
+                                    'text_dark' => '#000000',
+                                ],
+                                [
+                                    'bg' => '#218a81',
+                                    'border' => '#56f5e8',
+                                    'text' => '#000000',
+                                    'bg_dark' => '#000000',
+                                    'border_dark' => '#000000',
+                                    'text_dark' => '#000000',
+                                ],
+                            ];
+                        @endphp
                         @foreach($classrooms as $classroom)
-                            <div id="classroom-{{ $classroom->id }}" class="classroom-dropzone bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-300 w-full mb-2" data-classroom-id="{{ $classroom->id }}">
+                            @php
+                                $palette = $classroomPalette[$loop->index % count($classroomPalette)];
+                            @endphp
+                            <div
+                                id="classroom-{{ $classroom->id }}"
+                                class="classroom-dropzone classroom-color-card rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-300 w-full mb-2"
+                                data-classroom-id="{{ $classroom->id }}"
+                                style="
+                                    --classroom-bg: {{ $palette['bg'] }};
+                                    --classroom-border: {{ $palette['border'] }};
+                                    --classroom-text: {{ $palette['text'] }};
+                                    --classroom-bg-dark: {{ $palette['bg_dark'] }};
+                                    --classroom-border-dark: {{ $palette['border_dark'] }};
+                                    --classroom-text-dark: {{ $palette['text_dark'] }};
+                                "
+                            >
                                 <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-3">{{ $classroom->name }}</h2>
-                                @if($classroom->students->count() > 0)
-                                    <div class="space-y-2" id="classroom-students-{{ $classroom->id }}">
-                                        @foreach($classroom->students as $student)
+                                @php
+                                    $classroomStudents = $classroom->students->filter(function($student) {
+                                        return $student->locations->where('name', 'all')->count() > 0;
+                                    });
+                                @endphp
+                                <div class="space-y-2" id="classroom-students-{{ $classroom->id }}">
+                                    @if($classroomStudents->count() > 0)
+                                        @foreach($classroomStudents as $student)
                                             <a href="{{ route('posts.edit', $student->id) }}" class="block student-card bg-gray-100 dark:bg-gray-700 rounded p-2 text-sm cursor-pointer cursor-move" data-student-id="{{ $student->id }}" data-classroom-id="{{ $classroom->id }}">
                                                 <span class="text-gray-800 dark:text-gray-200">{{ $student->name }}</span>
                                             </a>
                                         @endforeach
-                                    </div>
-                                @else
-                                    <div class="space-y-2" id="classroom-students-{{ $classroom->id }}">
-                                        <p class="text-gray-500 dark:text-gray-400 text-sm">Geen studenten in deze klas</p>
-                                    </div>
-                                @endif
+                                    @else
+                                        <p class="no-students-message text-gray-500 dark:text-gray-400 text-sm">Geen studenten in deze klas</p>
+                                    @endif
+                                </div>
                                 @auth
                                     <div class="mt-3 flex flex-col space-y-2">
-                                        <div class="flex space-x-4">
-                                            <button onclick="editClassroom({{ $classroom->id }})" class="text-blue-500 hover:text-blue-700 font-bold text-sm">
+                                        <div class="flex space-x-3">
+                                            <button type="button" onclick="editClassroom({{ $classroom->id }})" class="px-3 py-1 rounded bg-white/30 text-blue-900 font-semibold text-sm hover:bg-white/50 dark:bg-white/10 dark:text-white">
                                                 Bewerken
                                             </button>
                                             <form action="{{ route('classrooms.destroy', $classroom->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Weet je zeker dat je deze klas wilt verwijderen?');">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="text-red-500 hover:text-red-700 font-bold text-sm">
+                                                <button type="submit" class="px-3 py-1 rounded bg-white/30 text-red-800 font-semibold text-sm hover:bg-white/50 dark:bg-white/10 dark:text-red-200">
                                                     Verwijderen
                                                 </button>
                                             </form>
@@ -102,16 +207,6 @@
                                 @if($student->locations->where('name', $location->name)->count() > 0)
                                     <div class="student-card bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-300 w-full mb-2" data-student-id="{{ $student->id }}" data-location="{{ $location->name }}">
                                         <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">{{ $student->name }}</h2>
-                                        @auth
-                                            <div class="mt-3 flex space-x-4">
-                                                <a href="{{ route('posts.edit', $student->id) }}" class="text-blue-500 hover:text-blue-700 font-bold text-sm">
-                                                    Bewerken
-                                                </a>
-                                                <button onclick="showDeleteModal({{ $student->id }})" class="text-red-500 hover:text-red-700 font-bold text-sm">
-                                                    Verwijderen
-                                                </button>
-                                            </div>
-                                        @endauth
                                     </div>
                                 @endif
                             @endforeach
@@ -156,12 +251,6 @@
                     </div>
                 @endauth
             </div>
-
-            @if(session('success'))
-                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
-                    <span class="block sm:inline">{{ session('success') }}</span>
-                </div>
-            @endif
 
             @if(isset($portfolios) && $portfolios->where('locations.*.name', 'all')->count() > 0 || $portfolios->count() > 0)
                 <div class="flex-1 overflow-y-auto ">
@@ -329,6 +418,61 @@
             });
         }
 
+        function extractStudentName(card) {
+            if (!card) return '';
+            const heading = card.querySelector('h2, span, strong');
+            if (heading) {
+                return heading.textContent.trim();
+            }
+            return (card.textContent || '').trim();
+        }
+
+        function ensureLocationStudentCard(card, studentId, studentName) {
+            const classes = 'student-card bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-300 w-full mb-2';
+            if (!card) {
+                card = document.createElement('div');
+            } else if (card.tagName.toLowerCase() !== 'div') {
+                const replacement = document.createElement('div');
+                if (card.parentNode) {
+                    card.parentNode.replaceChild(replacement, card);
+                }
+                card = replacement;
+            }
+            card.dataset.studentId = studentId;
+            card.className = classes;
+            card.innerHTML = `<h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">${studentName}</h2>`;
+            card.removeAttribute('href');
+            card.setAttribute('draggable', true);
+            card.removeEventListener('dragstart', handleDragStart);
+            card.removeEventListener('dragend', handleDragEnd);
+            card.addEventListener('dragstart', handleDragStart);
+            card.addEventListener('dragend', handleDragEnd);
+            return card;
+        }
+
+        function ensureAllStudentCard(card, studentId, studentName) {
+            const classes = 'block student-card bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-300 w-full mb-2 cursor-pointer';
+            if (!card) {
+                card = document.createElement('a');
+            } else if (card.tagName.toLowerCase() !== 'a') {
+                const replacement = document.createElement('a');
+                if (card.parentNode) {
+                    card.parentNode.replaceChild(replacement, card);
+                }
+                card = replacement;
+            }
+            card.dataset.studentId = studentId;
+            card.href = `/posts/${studentId}/edit`;
+            card.className = classes;
+            card.innerHTML = `<h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">${studentName}</h2>`;
+            card.setAttribute('draggable', true);
+            card.removeEventListener('dragstart', handleDragStart);
+            card.removeEventListener('dragend', handleDragEnd);
+            card.addEventListener('dragstart', handleDragStart);
+            card.addEventListener('dragend', handleDragEnd);
+            return card;
+        }
+
         // Setup drag and drop for all student cards (including those in classrooms)
         studentCards.forEach(card => {
             card.setAttribute('draggable', true);
@@ -449,8 +593,13 @@
             const newLocation = dropzone.dataset.location;
             const isStudent = payload.type === 'student';
             const selector = isStudent ? `[data-student-id="${payload.id}"]` : `[data-portfolio-id="${payload.id}"]`;
-            const card = document.querySelector(selector);
+            let card = document.querySelector(selector);
+            if (!card) {
+                console.error('Kon kaart niet vinden voor payload', payload);
+                return;
+            }
             const oldLocation = card.dataset.location;
+            const oldClassroomId = card.dataset.classroomId;
 
             // Update de locatie via AJAX
             const url = isStudent ? `/posts/${payload.id}/location` : `/portfolios/${payload.id}/location`;
@@ -474,6 +623,17 @@
                     }
                     if (oldDropzone && oldDropzone.contains(card)) {
                         oldDropzone.removeChild(card);
+                    } else if (oldClassroomId) {
+                        const classroomContainer = document.getElementById(`classroom-students-${oldClassroomId}`);
+                        if (classroomContainer && classroomContainer.contains(card)) {
+                            classroomContainer.removeChild(card);
+                            if (!classroomContainer.querySelector('.no-students-message')) {
+                                const placeholder = document.createElement('p');
+                                placeholder.className = 'no-students-message text-gray-500 dark:text-gray-400 text-sm';
+                                placeholder.textContent = 'Geen studenten in deze klas';
+                                classroomContainer.appendChild(placeholder);
+                            }
+                        }
                     }
 
                     // Voeg de kaart toe aan de nieuwe locatie
@@ -481,7 +641,16 @@
                         ? document.querySelector(isStudent ? '#all-students' : '#all-portfolios') || document.getElementById('all-portfolios')
                         : document.querySelector(`#kamer-${newLocation}`);
                     if (newDropzone) {
+                        if (isStudent) {
+                            const studentName = extractStudentName(card);
+                            if (newLocation === 'all') {
+                                card = ensureAllStudentCard(card, payload.id, studentName);
+                            } else {
+                                card = ensureLocationStudentCard(card, payload.id, studentName);
+                            }
+                        }
                         card.dataset.location = newLocation;
+                        delete card.dataset.classroomId;
                         newDropzone.appendChild(card);
                     }
 
@@ -557,9 +726,9 @@
                             classroomStudentsContainer.appendChild(studentCard);
                             
                             // Verberg de "Geen studenten" tekst
-                            const noStudentsText = classroomStudentsContainer.querySelector('p');
-                            if (noStudentsText && noStudentsText.textContent.includes('Geen studenten')) {
-                                noStudentsText.style.display = 'none';
+                            const noStudentsText = classroomStudentsContainer.querySelector('.no-students-message');
+                            if (noStudentsText) {
+                                noStudentsText.remove();
                             }
                             
                             // Re-setup drag events voor de nieuwe student card

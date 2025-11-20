@@ -14,7 +14,7 @@ class PostController extends Controller
         $students = Student::with('locations')->get();
         $locations = Location::all();
         $portfolios = Portfolio::with('locations')->orderBy('sort_order')->get();
-        $classrooms = Classroom::with('students')->get();
+        $classrooms = Classroom::with(['students.locations'])->get();
         return view('posts.index', [
             'students' => $students,
             'locations' => $locations,
@@ -54,22 +54,27 @@ class PostController extends Controller
 
     public function storeOrUpdate(Request $request, Student $student = null)
     {
+        $classroomRule = $student ? 'nullable|exists:classrooms,id' : 'required|exists:classrooms,id';
         $validated = $request->validate([
             'name'=> 'required|max:25',
-            'classroom_id' => 'required|exists:classrooms,id',
+            'classroom_id' => $classroomRule,
             'opmerkingen' => 'nullable|string',
         ]);
 
-        if($student)
-        {
+        if ($student) {
             $student->update([
                 'name' => $validated['name'],
                 'opmerkingen' => $validated['opmerkingen'] ?? null
             ]);
-            // Bijwerken classroom: optioneel (optioneel toevoegen)
-        } 
-        else
-        {
+
+            if (array_key_exists('classroom_id', $validated)) {
+                if (!empty($validated['classroom_id'])) {
+                    $student->classrooms()->sync([$validated['classroom_id']]);
+                } else {
+                    $student->classrooms()->detach();
+                }
+            }
+        } else {
             $student = Student::create([
                 'name' => $validated['name'],
                 'opmerkingen' => $validated['opmerkingen'] ?? null
@@ -121,9 +126,6 @@ class PostController extends Controller
             
             // Verwijder alle bestaande locaties
             $student->locations()->detach();
-            // Verwijder uit alle klassen zodra hij naar een locatie wordt versleept
-            $student->classrooms()->detach();
-            
             // Voeg de nieuwe locatie toe
             $student->locations()->attach($location->id);
 
