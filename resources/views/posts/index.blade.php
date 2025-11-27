@@ -17,8 +17,88 @@
             border-color: var(--classroom-border-dark, #374151);
             color: var(--classroom-text-dark, #f3f4f6);
         }
+
+        .portfolio-color-card {
+            background-color: var(--portfolio-bg, #fff);
+            border-left: 4px solid var(--portfolio-border, #e5e7eb);
+            color: var(--portfolio-text, #1f2937);
+        }
+
+        .dark .portfolio-color-card {
+            background-color: var(--portfolio-bg-dark, #1f2937);
+            border-color: var(--portfolio-border-dark, #374151);
+            color: var(--portfolio-text-dark, #f3f4f6);
+        }
     </style>
 </head>
+@php
+    $portfolioPalette = [
+        [
+            'bg' => '#fde68a',
+            'border' => '#fbbf24',
+            'text' => '#78350f',
+            'bg_dark' => '#92400e',
+            'border_dark' => '#d97706',
+            'text_dark' => '#fef3c7',
+        ],
+        [
+            'bg' => '#bbf7d0',
+            'border' => '#34d399',
+            'text' => '#064e3b',
+            'bg_dark' => '#065f46',
+            'border_dark' => '#10b981',
+            'text_dark' => '#dcfce7',
+        ],
+        [
+            'bg' => '#bfdbfe',
+            'border' => '#60a5fa',
+            'text' => '#1e3a8a',
+            'bg_dark' => '#1d4ed8',
+            'border_dark' => '#3b82f6',
+            'text_dark' => '#dbeafe',
+        ],
+        [
+            'bg' => '#ddd6fe',
+            'border' => '#a78bfa',
+            'text' => '#4c1d95',
+            'bg_dark' => '#5b21b6',
+            'border_dark' => '#8b5cf6',
+            'text_dark' => '#ede9fe',
+        ],
+        [
+            'bg' => '#fecdd3',
+            'border' => '#fb7185',
+            'text' => '#831843',
+            'bg_dark' => '#9f1239',
+            'border_dark' => '#f43f5e',
+            'text_dark' => '#ffe4e6',
+        ],
+        [
+            'bg' => '#c7d2fe',
+            'border' => '#818cf8',
+            'text' => '#312e81',
+            'bg_dark' => '#4338ca',
+            'border_dark' => '#6366f1',
+            'text_dark' => '#e0e7ff',
+        ],
+        [
+            'bg' => '#e9d5ff',
+            'border' => '#a855f7',
+            'text' => '#581c87',
+            'bg_dark' => '#6b21a8',
+            'border_dark' => '#c084fc',
+            'text_dark' => '#f3e8ff',
+        ],
+        [
+            'bg' => '#fcd34d',
+            'border' => '#f97316',
+            'text' => '#7c2d12',
+            'bg_dark' => '#c2410c',
+            'border_dark' => '#ea580c',
+            'text_dark' => '#ffedd5',
+        ],
+    ];
+@endphp
 <div class="bg-gray-100 dark:bg-gray-900">
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 min-h-[650px]">
         <!-- Eerste kolom - Studenten Overzicht -->
@@ -213,7 +293,22 @@
                             @if(isset($portfolios))
                                 @foreach($portfolios as $portfolio)
                                     @if($portfolio->locations && $portfolio->locations->where('name', $location->name)->count() > 0)
-                                        <div class="student-card bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-300 w-full mb-2" data-portfolio-id="{{ $portfolio->id }}" data-location="{{ $location->name }}">
+                                        @php
+                                            $portfolioColors = $portfolioPalette[(($portfolio->id ?? 1) - 1) % count($portfolioPalette)];
+                                        @endphp
+                                        <div
+                                            class="student-card portfolio-color-card rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-300 w-full mb-2"
+                                            data-portfolio-id="{{ $portfolio->id }}"
+                                            data-location="{{ $location->name }}"
+                                            style="
+                                                --portfolio-bg: {{ $portfolioColors['bg'] }};
+                                                --portfolio-border: {{ $portfolioColors['border'] }};
+                                                --portfolio-text: {{ $portfolioColors['text'] }};
+                                                --portfolio-bg-dark: {{ $portfolioColors['bg_dark'] }};
+                                                --portfolio-border-dark: {{ $portfolioColors['border_dark'] }};
+                                                --portfolio-text-dark: {{ $portfolioColors['text_dark'] }};
+                                            "
+                                        >
                                             <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">{{ $portfolio->title }}</h2>
                                             @if(!empty($portfolio->description))
                                                 <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">{{ $portfolio->description }}</p>
@@ -260,21 +355,36 @@
                                 $inAll = $portfolio->locations && $portfolio->locations->where('name', 'all')->count() > 0;
                             @endphp
                             @if($inAll)
-                            <div class="student-card bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-300 w-full mb-2" data-portfolio-id="{{ $portfolio->id }}" data-location="all">
-                                <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">{{ $portfolio->title }}</h2>
-                                @if(!empty($portfolio->description))
-                                    <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">{{ $portfolio->description }}</p>
-                                @endif
-                                @if(!empty($portfolio->link))
-                                    <a href="{{ $portfolio->link }}" target="_blank" class="mt-3 inline-block text-blue-500 hover:text-blue-700 font-bold text-sm">Bekijken</a>
-                                @endif
-                                @auth
-                                    <div class="mt-3 flex space-x-4">
-                                        <a href="{{ route('portfolios.edit', $portfolio->id) }}" class="text-blue-500 hover:text-blue-700 font-bold text-sm">Bewerken</a>
-                                        <button onclick="showPortfolioDeleteModal({{ $portfolio->id }})" class="text-red-500 hover:text-red-700 font-bold text-sm">Verwijderen</button>
-                                    </div>
-                                @endauth
-                            </div>
+                                @php
+                                    $portfolioColors = $portfolioPalette[(($portfolio->id ?? 1) - 1) % count($portfolioPalette)];
+                                @endphp
+                                <div
+                                    class="student-card portfolio-color-card rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-300 w-full mb-2"
+                                    data-portfolio-id="{{ $portfolio->id }}"
+                                    data-location="all"
+                                    style="
+                                        --portfolio-bg: {{ $portfolioColors['bg'] }};
+                                        --portfolio-border: {{ $portfolioColors['border'] }};
+                                        --portfolio-text: {{ $portfolioColors['text'] }};
+                                        --portfolio-bg-dark: {{ $portfolioColors['bg_dark'] }};
+                                        --portfolio-border-dark: {{ $portfolioColors['border_dark'] }};
+                                        --portfolio-text-dark: {{ $portfolioColors['text_dark'] }};
+                                    "
+                                >
+                                    <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">{{ $portfolio->title }}</h2>
+                                    @if(!empty($portfolio->description))
+                                        <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">{{ $portfolio->description }}</p>
+                                    @endif
+                                    @if(!empty($portfolio->link))
+                                        <a href="{{ $portfolio->link }}" target="_blank" class="mt-3 inline-block text-blue-500 hover:text-blue-700 font-bold text-sm">Bekijken</a>
+                                    @endif
+                                    @auth
+                                        <div class="mt-3 flex space-x-4">
+                                            <a href="{{ route('portfolios.edit', $portfolio->id) }}" class="text-blue-500 hover:text-blue-700 font-bold text-sm">Bewerken</a>
+                                            <button onclick="showPortfolioDeleteModal({{ $portfolio->id }})" class="text-red-500 hover:text-red-700 font-bold text-sm">Verwijderen</button>
+                                        </div>
+                                    @endauth
+                                </div>
                             @endif
                         @endforeach
                     </div>
