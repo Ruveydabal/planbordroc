@@ -17,15 +17,6 @@
             </div>
         @endif
 
-        @if($portfolio->locations && $portfolio->locations->count() > 0)
-            <div class="mb-4 p-4 bg-blue-50 dark:bg-blue-900/40 rounded-lg text-blue-900 dark:text-blue-100">
-                <strong>Locatie:</strong>
-                <span>
-                    {{ $portfolio->locations->pluck('display_name')->filter()->implode(', ') ?: $portfolio->locations->pluck('name')->implode(', ') }}
-                </span>
-            </div>
-        @endif
-
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 space-y-6">
             <form method="POST" action="{{ route('portfolios.update', $portfolio->id) }}">
                 @csrf
@@ -67,39 +58,48 @@
                     >
                 </div>
 
-                <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between mt-6">
-                    <a
-                        href="{{ route('posts.index') }}"
-                        class="text-center bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                    >
-                        Terug naar overzicht
-                    </a>
-                    <button
-                        type="submit"
-                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                    >
-                        Portfolio bijwerken
-                    </button>
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mt-6">
+                    <div class="flex flex-col md:flex-row gap-3 w-full md:w-auto">
+                        <a
+                            href="{{ route('posts.index') }}"
+                            class="text-center bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full md:w-auto"
+                        >
+                            Terug naar overzicht
+                        </a>
+                        <a
+                            href="{{ route('portfolios.create') }}"
+                            class="text-center bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full md:w-auto"
+                        >
+                            Nieuw portfolio
+                        </a>
+                    </div>
+                    <div class="flex flex-col md:flex-row gap-3 w-full md:w-auto">
+                        <button
+                            type="submit"
+                            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full md:w-auto"
+                        >
+                            Portfolio bijwerken
+                        </button>
+                        @auth
+                        <form
+                            action="{{ route('portfolios.destroy', $portfolio->id) }}"
+                            method="POST"
+                            onsubmit="return confirm('Weet je zeker dat je dit portfolio wilt verwijderen? Dit kan niet ongedaan worden gemaakt.');"
+                            class="w-full md:w-auto"
+                        >
+                            @csrf
+                            @method('DELETE')
+                            <button
+                                type="submit"
+                                class="w-full md:w-auto bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                            >
+                                Portfolio verwijderen
+                            </button>
+                        </form>
+                        @endauth
+                    </div>
                 </div>
             </form>
-
-            @auth
-            <form
-                action="{{ route('portfolios.destroy', $portfolio->id) }}"
-                method="POST"
-                onsubmit="return confirm('Weet je zeker dat je dit portfolio wilt verwijderen? Dit kan niet ongedaan worden gemaakt.');"
-                class="flex justify-end"
-            >
-                @csrf
-                @method('DELETE')
-                <button
-                    type="submit"
-                    class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                >
-                    Portfolio verwijderen
-                </button>
-            </form>
-            @endauth
         </div>
     </div>
 </div>
