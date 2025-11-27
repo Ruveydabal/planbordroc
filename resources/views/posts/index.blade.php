@@ -318,10 +318,10 @@
                                         @endif
                                         @auth
                                             <div class="mt-3 flex space-x-4 text-sm font-semibold">
-                                                <a href="{{ route('portfolios.edit', $portfolio->id) }}" class="text-white hover:text-gray-100">
+                                                <a href="{{ route('portfolios.edit', $portfolio->id) }}" class="text-white">
                                                     Bewerken
                                                 </a>
-                                                <button onclick="showPortfolioDeleteModal({{ $portfolio->id }})" class="text-black hover:text-gray-900">
+                                                <button onclick="showPortfolioDeleteModal({{ $portfolio->id }})" class="text-black">
                                                     Verwijderen
                                                 </button>
                                             </div>
@@ -384,10 +384,10 @@
                                     @endif
                                     @auth
                                         <div class="mt-3 flex space-x-4 text-sm font-semibold">
-                                            <a href="{{ route('portfolios.edit', $portfolio->id) }}" class="text-white hover:text-gray-100">
+                                            <a href="{{ route('portfolios.edit', $portfolio->id) }}" class="text-white">
                                                 Bewerken
                                             </a>
-                                            <button onclick="showPortfolioDeleteModal({{ $portfolio->id }})" class="text-black hover:text-gray-900">
+                                            <button onclick="showPortfolioDeleteModal({{ $portfolio->id }})" class="text-black">
                                                 Verwijderen
                                             </button>
                                         </div>
