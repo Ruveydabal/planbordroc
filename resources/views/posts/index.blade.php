@@ -313,15 +313,19 @@
                                             @if(!empty($portfolio->description))
                                                 <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">{{ $portfolio->description }}</p>
                                             @endif
-                                            @if(!empty($portfolio->link))
-                                                <a href="{{ $portfolio->link }}" target="_blank" class="mt-3 inline-block text-blue-500 hover:text-blue-700 font-bold text-sm">Bekijken</a>
-                                            @endif
-                                            @auth
-                                                <div class="mt-3 flex space-x-4">
-                                                    <a href="{{ route('portfolios.edit', $portfolio->id) }}" class="text-blue-500 hover:text-blue-700 font-bold text-sm">Bewerken</a>
-                                                    <button onclick="showPortfolioDeleteModal({{ $portfolio->id }})" class="text-red-500 hover:text-red-700 font-bold text-sm">Verwijderen</button>
-                                                </div>
-                                            @endauth
+                                        @if(!empty($portfolio->link))
+                                            <a href="{{ $portfolio->link }}" target="_blank" class="mt-3 inline-block text-blue-500 hover:text-blue-700 font-bold text-sm">Bekijken</a>
+                                        @endif
+                                        @auth
+                                            <div class="mt-3 flex space-x-4 text-sm font-semibold">
+                                                <a href="{{ route('portfolios.edit', $portfolio->id) }}" class="text-blue-500 hover:text-blue-700">
+                                                    Bewerken
+                                                </a>
+                                                <button onclick="showPortfolioDeleteModal({{ $portfolio->id }})" class="text-red-500 hover:text-red-700">
+                                                    Verwijderen
+                                                </button>
+                                            </div>
+                                        @endauth
                                         </div>
                                     @endif
                                 @endforeach
@@ -379,9 +383,13 @@
                                         <a href="{{ $portfolio->link }}" target="_blank" class="mt-3 inline-block text-blue-500 hover:text-blue-700 font-bold text-sm">Bekijken</a>
                                     @endif
                                     @auth
-                                        <div class="mt-3 flex space-x-4">
-                                            <a href="{{ route('portfolios.edit', $portfolio->id) }}" class="text-blue-500 hover:text-blue-700 font-bold text-sm">Bewerken</a>
-                                            <button onclick="showPortfolioDeleteModal({{ $portfolio->id }})" class="text-red-500 hover:text-red-700 font-bold text-sm">Verwijderen</button>
+                                        <div class="mt-3 flex space-x-4 text-sm font-semibold">
+                                            <a href="{{ route('portfolios.edit', $portfolio->id) }}" class="text-blue-500 hover:text-blue-700">
+                                                Bewerken
+                                            </a>
+                                            <button onclick="showPortfolioDeleteModal({{ $portfolio->id }})" class="text-red-500 hover:text-red-700">
+                                                Verwijderen
+                                            </button>
                                         </div>
                                     @endauth
                                 </div>
