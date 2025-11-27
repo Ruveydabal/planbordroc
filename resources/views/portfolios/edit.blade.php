@@ -26,7 +26,7 @@
             </div>
         @endif
 
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 space-y-6">
             <form method="POST" action="{{ route('portfolios.update', $portfolio->id) }}">
                 @csrf
                 @method('PUT')
@@ -74,32 +74,32 @@
                     >
                         Terug naar overzicht
                     </a>
-                    <div class="flex gap-3 justify-end">
-                        @auth
-                        <form
-                            action="{{ route('portfolios.destroy', $portfolio->id) }}"
-                            method="POST"
-                            onsubmit="return confirm('Weet je zeker dat je dit portfolio wilt verwijderen? Dit kan niet ongedaan worden gemaakt.');"
-                        >
-                            @csrf
-                            @method('DELETE')
-                            <button
-                                type="submit"
-                                class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                            >
-                                Verwijderen
-                            </button>
-                        </form>
-                        @endauth
-                        <button
-                            type="submit"
-                            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                        >
-                            Portfolio bijwerken
-                        </button>
-                    </div>
+                    <button
+                        type="submit"
+                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                    >
+                        Portfolio bijwerken
+                    </button>
                 </div>
             </form>
+
+            @auth
+            <form
+                action="{{ route('portfolios.destroy', $portfolio->id) }}"
+                method="POST"
+                onsubmit="return confirm('Weet je zeker dat je dit portfolio wilt verwijderen? Dit kan niet ongedaan worden gemaakt.');"
+                class="flex justify-end"
+            >
+                @csrf
+                @method('DELETE')
+                <button
+                    type="submit"
+                    class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                >
+                    Portfolio verwijderen
+                </button>
+            </form>
+            @endauth
         </div>
     </div>
 </div>
