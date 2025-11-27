@@ -46,6 +46,7 @@ class PortfolioController extends Controller
 
     public function edit(Portfolio $portfolio)
     {
+        $portfolio->load('locations');
         return view('portfolios.edit', [
             'portfolio' => $portfolio,
         ]);
