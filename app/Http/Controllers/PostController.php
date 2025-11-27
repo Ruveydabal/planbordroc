@@ -62,22 +62,25 @@ class PostController extends Controller
         ]);
 
         if ($student) {
-            $student->update([
-                'name' => $validated['name'],
-                'opmerkingen' => $validated['opmerkingen'] ?? null
-            ]);
+            $student->name = $validated['name'];
+            $student->opmerkingen = $validated['opmerkingen'] ?? null;
 
             if (array_key_exists('classroom_id', $validated)) {
                 if (!empty($validated['classroom_id'])) {
+                    $student->last_classroom_id = $validated['classroom_id'];
                     $student->classrooms()->sync([$validated['classroom_id']]);
                 } else {
+                    $student->last_classroom_id = null;
                     $student->classrooms()->detach();
                 }
             }
+
+            $student->save();
         } else {
             $student = Student::create([
                 'name' => $validated['name'],
-                'opmerkingen' => $validated['opmerkingen'] ?? null
+                'opmerkingen' => $validated['opmerkingen'] ?? null,
+                'last_classroom_id' => $validated['classroom_id'],
             ]);
             $classroom = Classroom::find($validated['classroom_id']);
             if ($classroom) {
@@ -123,11 +126,17 @@ class PostController extends Controller
         try {
             $student = Student::findOrFail($id);
             $location = Location::where('name', $request->location)->firstOrFail();
+            $previousClassroomId = $student->classrooms()->first()?->id;
             
             // Verwijder alle bestaande locaties
             $student->locations()->detach();
             // Voeg de nieuwe locatie toe
             $student->locations()->attach($location->id);
+
+            if ($previousClassroomId) {
+                $student->last_classroom_id = $previousClassroomId;
+                $student->save();
+            }
 
             return response()->json([
                 'success' => true,
@@ -150,6 +159,8 @@ class PostController extends Controller
             $student = Student::findOrFail($id);
             $classroomId = $request->classroom_id;
             $student->classrooms()->sync([$classroomId]);
+            $student->last_classroom_id = $classroomId;
+            $student->save();
             // Optioneel: locatie weer op 'all' zetten, als gewenst
             $allLocation = \App\Models\Location::where('name', 'all')->first();
             if ($allLocation) {

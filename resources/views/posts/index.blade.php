@@ -29,6 +29,14 @@
             border-color: var(--portfolio-border-dark, #374151);
             color: var(--portfolio-text-dark, #f3f4f6);
         }
+
+        .student-color-card {
+            border-left: 4px solid var(--student-border, transparent);
+        }
+
+        .dark .student-color-card {
+            border-color: var(--student-border-dark, var(--student-border, transparent));
+        }
     </style>
 </head>
 @php
@@ -98,6 +106,72 @@
             'text_dark' => '#ffedd5',
         ],
     ];
+    $classroomPalette = [
+        [
+            'bg' => '#d96500',
+            'border' => '#fc7703',
+            'text' => '#000000',
+            'bg_dark' => '#000000',
+            'border_dark' => '#000000',
+            'text_dark' => '#000000',
+        ],
+        [
+            'bg' => '#A6A605',
+            'border' => '#d4d402',
+            'text' => '#000000',
+            'bg_dark' => '#000000',
+            'border_dark' => '#000000',
+            'text_dark' => '#000000',
+        ],
+        [
+            'bg' => '#056da6',
+            'border' => '#0798e6',
+            'text' => '#000000',
+            'bg_dark' => '#000000',
+            'border_dark' => '#000000',
+            'text_dark' => '#000000',
+        ],
+        [
+            'bg' => '#640cb0',
+            'border' => '#8507f2',
+            'text' => '#000000',
+            'bg_dark' => '#000000',
+            'border_dark' => '#000000',
+            'text_dark' => '#000000',
+        ],
+        [
+            'bg' => '#ba0f9e',
+            'border' => '#f707cf',
+            'text' => '#000000',
+            'bg_dark' => '#000000',
+            'border_dark' => '#000000',
+            'text_dark' => '#000000',
+        ],
+        [
+            'bg' => '#b31961',
+            'border' => '#f0167b',
+            'text' => '#000000',
+            'bg_dark' => '#000000',
+            'border_dark' => '#000000',
+            'text_dark' => '#000000',
+        ],
+        [
+            'bg' => '#3a8717',
+            'border' => '#5ae619',
+            'text' => '#000000',
+            'bg_dark' => '#000000',
+            'border_dark' => '#000000',
+            'text_dark' => '#000000',
+        ],
+        [
+            'bg' => '#218a81',
+            'border' => '#56f5e8',
+            'text' => '#000000',
+            'bg_dark' => '#000000',
+            'border_dark' => '#000000',
+            'text_dark' => '#000000',
+        ],
+    ];
 @endphp
 <div class="bg-gray-100 dark:bg-gray-900">
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 min-h-[650px]">
@@ -130,7 +204,24 @@
                     @if($students->count() > 0)
                         @foreach($students as $student)
                             @if($student->classrooms->count() == 0 && $student->locations->where('name', 'all')->count() > 0)
-                                <a href="{{ route('posts.edit', $student->id) }}" class="block student-card bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-300 w-full mb-2 cursor-pointer" data-student-id="{{ $student->id }}" data-location="all">
+                                @php
+                                    $studentColor = null;
+                                    if ($student->last_classroom_id) {
+                                        $colorIndex = (($student->last_classroom_id - 1) % count($classroomPalette));
+                                        $studentColor = $classroomPalette[$colorIndex];
+                                    }
+                                    $colorStyle = $studentColor ? "--student-border: {$studentColor['border']}; --student-border-dark: {$studentColor['border_dark']};" : '';
+                                    $studentColorClass = $studentColor ? 'student-color-card' : '';
+                                @endphp
+                                <a
+                                    href="{{ route('posts.edit', $student->id) }}"
+                                    class="block student-card bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-300 w-full mb-2 cursor-pointer {{ $studentColorClass }}"
+                                    data-student-id="{{ $student->id }}"
+                                    data-location="all"
+                                    data-classroom-color-border="{{ $studentColor['border'] ?? '' }}"
+                                    data-classroom-color-border-dark="{{ $studentColor['border_dark'] ?? '' }}"
+                                    style="{{ $colorStyle }}"
+                                >
                                     <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">{{ $student->name }}</h2>
                                 </a>
                             @endif
@@ -139,77 +230,10 @@
                     
                     <!-- Klassen blokken - altijd zichtbaar -->
                     @if(isset($classrooms) && $classrooms->count() > 0)
-                        @php
-                            $classroomPalette = [
-                                [
-                                    'bg' => '#d96500',
-                                    'border' => '#fc7703',
-                                    'text' => '#000000',
-                                    'bg_dark' => '#000000',
-                                    'border_dark' => '#000000',
-                                    'text_dark' => '#000000',
-                                ],
-                                [
-                                    'bg' => '#A6A605',
-                                    'border' => '#d4d402',
-                                    'text' => '#000000',
-                                    'bg_dark' => '#000000',
-                                    'border_dark' => '#000000',
-                                    'text_dark' => '#000000',
-                                ],
-                                [
-                                    'bg' => '#056da6',
-                                    'border' => '#0798e6',
-                                    'text' => '#000000',
-                                    'bg_dark' => '#000000',
-                                    'border_dark' => '#000000',
-                                    'text_dark' => '#000000',
-                                ],
-                                [
-                                    'bg' => '#640cb0',
-                                    'border' => '#8507f2',
-                                    'text' => '#000000',
-                                    'bg_dark' => '#000000',
-                                    'border_dark' => '#000000',
-                                    'text_dark' => '#000000',
-                                ],
-                                [
-                                    'bg' => '#ba0f9e',
-                                    'border' => '#f707cf',
-                                    'text' => '#000000',
-                                    'bg_dark' => '#000000',
-                                    'border_dark' => '#000000',
-                                    'text_dark' => '#000000',
-                                ],
-                                [
-                                    'bg' => '#b31961',
-                                    'border' => '#f0167b',
-                                    'text' => '#000000',
-                                    'bg_dark' => '#000000',
-                                    'border_dark' => '#000000',
-                                    'text_dark' => '#000000',
-                                ],
-                                [
-                                    'bg' => '#3a8717',
-                                    'border' => '#5ae619',
-                                    'text' => '#000000',
-                                    'bg_dark' => '#000000',
-                                    'border_dark' => '#000000',
-                                    'text_dark' => '#000000',
-                                ],
-                                [
-                                    'bg' => '#218a81',
-                                    'border' => '#56f5e8',
-                                    'text' => '#000000',
-                                    'bg_dark' => '#000000',
-                                    'border_dark' => '#000000',
-                                    'text_dark' => '#000000',
-                                ],
-                            ];
-                        @endphp
                         @foreach($classrooms as $classroom)
                             @php
-                                $palette = $classroomPalette[$loop->index % count($classroomPalette)];
+                                $paletteIndex = (($classroom->id - 1) % count($classroomPalette));
+                                $palette = $classroomPalette[$paletteIndex];
                             @endphp
                             <div
                                 id="classroom-{{ $classroom->id }}"
@@ -294,7 +318,23 @@
                             {{ $location->display_name }}
                             @foreach($students as $student)
                                 @if($student->locations->where('name', $location->name)->count() > 0)
-                                    <div class="student-card bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-300 w-full mb-2" data-student-id="{{ $student->id }}" data-location="{{ $location->name }}">
+                                    @php
+                                        $studentColor = null;
+                                        if ($student->last_classroom_id) {
+                                            $colorIndex = (($student->last_classroom_id - 1) % count($classroomPalette));
+                                            $studentColor = $classroomPalette[$colorIndex];
+                                        }
+                                        $colorStyle = $studentColor ? "--student-border: {$studentColor['border']}; --student-border-dark: {$studentColor['border_dark']};" : '';
+                                        $studentColorClass = $studentColor ? 'student-color-card' : '';
+                                    @endphp
+                                    <div
+                                        class="student-card bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-300 w-full mb-2 {{ $studentColorClass }}"
+                                        data-student-id="{{ $student->id }}"
+                                        data-location="{{ $location->name }}"
+                                        data-classroom-color-border="{{ $studentColor['border'] ?? '' }}"
+                                        data-classroom-color-border-dark="{{ $studentColor['border_dark'] ?? '' }}"
+                                        style="{{ $colorStyle }}"
+                                    >
                                         <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">{{ $student->name }}</h2>
                                     </div>
                                 @endif
@@ -554,6 +594,25 @@
             return copy;
         }
 
+        function applyStudentBorder(card) {
+            if (!card) return;
+            const border = card.dataset.classroomColorBorder;
+            const borderDark = card.dataset.classroomColorBorderDark;
+            if (border) {
+                card.classList.add('student-color-card');
+                card.style.setProperty('--student-border', border);
+                if (borderDark) {
+                    card.style.setProperty('--student-border-dark', borderDark);
+                } else {
+                    card.style.removeProperty('--student-border-dark');
+                }
+            } else {
+                card.classList.remove('student-color-card');
+                card.style.removeProperty('--student-border');
+                card.style.removeProperty('--student-border-dark');
+            }
+        }
+
         function extractStudentName(card) {
             if (!card) return '';
             const heading = card.querySelector('h2, span, strong');
@@ -588,12 +647,7 @@
             card.removeEventListener('dragend', handleDragEnd);
             card.addEventListener('dragstart', handleDragStart);
             card.addEventListener('dragend', handleDragEnd);
-            const borderColor = card.dataset.classroomColorBorder;
-            if (borderColor) {
-                card.style.borderLeft = `4px solid ${borderColor}`;
-            } else {
-                card.style.borderLeft = '';
-            }
+            applyStudentBorder(card);
             return card;
         }
 
@@ -622,7 +676,7 @@
             card.removeEventListener('dragend', handleDragEnd);
             card.addEventListener('dragstart', handleDragStart);
             card.addEventListener('dragend', handleDragEnd);
-            card.style.borderLeft = '';
+            applyStudentBorder(card);
             return card;
         }
 
@@ -631,6 +685,9 @@
             card.setAttribute('draggable', true);
             card.addEventListener('dragstart', handleDragStart);
             card.addEventListener('dragend', handleDragEnd);
+            if (card.dataset.location) {
+                applyStudentBorder(card);
+            }
         });
 
         // Ook studenten in klassen draggable maken
@@ -854,7 +911,6 @@
             })
             .then(response => {
                 if (response.ok) {
-                    window.location.reload();
                     return response.json();
                 } else {
                     throw new Error('Server error: ' + response.status);
@@ -886,7 +942,9 @@
                             } else {
                                 delete studentCard.dataset.classroomColorBorderDark;
                             }
-                            studentCard.style.borderLeft = '';
+                            studentCard.classList.remove('student-color-card');
+                            studentCard.style.removeProperty('--student-border');
+                            studentCard.style.removeProperty('--student-border-dark');
                             studentCard.innerHTML = `<span class="text-gray-800 dark:text-gray-200">${data.student_name || 'Student'}</span>`;
                             
                             classroomStudentsContainer.appendChild(studentCard);

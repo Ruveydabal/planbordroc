@@ -11,6 +11,7 @@ class Student extends Model
     protected $fillable = [
         'name',
         'opmerkingen',
+        'last_classroom_id',
     ];
 
     public function locations()
