@@ -215,6 +215,8 @@
                                 id="classroom-{{ $classroom->id }}"
                                 class="classroom-dropzone classroom-color-card rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-300 w-full mb-2"
                                 data-classroom-id="{{ $classroom->id }}"
+                                data-classroom-border="{{ $palette['border'] }}"
+                                data-classroom-border-dark="{{ $palette['border_dark'] }}"
                                 style="
                                     --classroom-bg: {{ $palette['bg'] }};
                                     --classroom-border: {{ $palette['border'] }};
@@ -233,7 +235,14 @@
                                 <div class="space-y-2" id="classroom-students-{{ $classroom->id }}">
                                     @if($classroomStudents->count() > 0)
                                         @foreach($classroomStudents as $student)
-                                            <a href="{{ route('posts.edit', $student->id) }}" class="block student-card bg-gray-100 dark:bg-gray-700 rounded p-2 text-sm cursor-pointer cursor-move" data-student-id="{{ $student->id }}" data-classroom-id="{{ $classroom->id }}">
+                                            <a
+                                                href="{{ route('posts.edit', $student->id) }}"
+                                                class="block student-card bg-gray-100 dark:bg-gray-700 rounded p-2 text-sm cursor-pointer cursor-move"
+                                                data-student-id="{{ $student->id }}"
+                                                data-classroom-id="{{ $classroom->id }}"
+                                                data-classroom-color-border="{{ $palette['border'] }}"
+                                                data-classroom-color-border-dark="{{ $palette['border_dark'] }}"
+                                            >
                                                 <span class="text-gray-800 dark:text-gray-200">{{ $student->name }}</span>
                                             </a>
                                         @endforeach
@@ -536,6 +545,15 @@
             });
         }
 
+        function cloneDatasetMap(dataset) {
+            const copy = {};
+            if (!dataset) return copy;
+            Object.keys(dataset).forEach(key => {
+                copy[key] = dataset[key];
+            });
+            return copy;
+        }
+
         function extractStudentName(card) {
             if (!card) return '';
             const heading = card.querySelector('h2, span, strong');
@@ -547,6 +565,7 @@
 
         function ensureLocationStudentCard(card, studentId, studentName) {
             const classes = 'student-card bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-300 w-full mb-2';
+            const datasetCopy = cloneDatasetMap(card ? card.dataset : null);
             if (!card) {
                 card = document.createElement('div');
             } else if (card.tagName.toLowerCase() !== 'div') {
@@ -556,6 +575,10 @@
                 }
                 card = replacement;
             }
+            Object.keys(card.dataset).forEach(key => delete card.dataset[key]);
+            Object.entries(datasetCopy).forEach(([key, value]) => {
+                card.dataset[key] = value;
+            });
             card.dataset.studentId = studentId;
             card.className = classes;
             card.innerHTML = `<h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">${studentName}</h2>`;
@@ -565,11 +588,18 @@
             card.removeEventListener('dragend', handleDragEnd);
             card.addEventListener('dragstart', handleDragStart);
             card.addEventListener('dragend', handleDragEnd);
+            const borderColor = card.dataset.classroomColorBorder;
+            if (borderColor) {
+                card.style.borderLeft = `4px solid ${borderColor}`;
+            } else {
+                card.style.borderLeft = '';
+            }
             return card;
         }
 
         function ensureAllStudentCard(card, studentId, studentName) {
             const classes = 'block student-card bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-300 w-full mb-2 cursor-pointer';
+            const datasetCopy = cloneDatasetMap(card ? card.dataset : null);
             if (!card) {
                 card = document.createElement('a');
             } else if (card.tagName.toLowerCase() !== 'a') {
@@ -579,6 +609,10 @@
                 }
                 card = replacement;
             }
+            Object.keys(card.dataset).forEach(key => delete card.dataset[key]);
+            Object.entries(datasetCopy).forEach(([key, value]) => {
+                card.dataset[key] = value;
+            });
             card.dataset.studentId = studentId;
             card.href = `/posts/${studentId}/edit`;
             card.className = classes;
@@ -588,6 +622,7 @@
             card.removeEventListener('dragend', handleDragEnd);
             card.addEventListener('dragstart', handleDragStart);
             card.addEventListener('dragend', handleDragEnd);
+            card.style.borderLeft = '';
             return card;
         }
 
@@ -839,6 +874,19 @@
                             // Update de student card styling voor in de klas
                             studentCard.className = 'student-card bg-gray-100 dark:bg-gray-700 rounded p-2 text-sm cursor-move';
                             studentCard.dataset.classroomId = classroomId;
+                            const borderColor = e.currentTarget.dataset.classroomBorder;
+                            const borderColorDark = e.currentTarget.dataset.classroomBorderDark;
+                            if (borderColor) {
+                                studentCard.dataset.classroomColorBorder = borderColor;
+                            } else {
+                                delete studentCard.dataset.classroomColorBorder;
+                            }
+                            if (borderColorDark) {
+                                studentCard.dataset.classroomColorBorderDark = borderColorDark;
+                            } else {
+                                delete studentCard.dataset.classroomColorBorderDark;
+                            }
+                            studentCard.style.borderLeft = '';
                             studentCard.innerHTML = `<span class="text-gray-800 dark:text-gray-200">${data.student_name || 'Student'}</span>`;
                             
                             classroomStudentsContainer.appendChild(studentCard);
