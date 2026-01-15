@@ -345,7 +345,7 @@
                                         @php
                                             $portfolioColors = $portfolioPalette[(($portfolio->id ?? 1) - 1) % count($portfolioPalette)];
                                         @endphp
-                                        <div
+                                <div
                                             class="student-card portfolio-color-card rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-300 w-full mb-2"
                                             data-portfolio-id="{{ $portfolio->id }}"
                                             data-location="{{ $location->name }}"
@@ -359,6 +359,9 @@
                                             "
                                         >
                                             <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">{{ $portfolio->title }}</h2>
+                                            @if(!empty($portfolio->subtitle))
+                                                <h3 class="text-md font-medium text-gray-800 dark:text-gray-100 mt-1">{{ $portfolio->subtitle }}</h3>
+                                            @endif
                                             @if(!empty($portfolio->description))
                                                 <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">{{ $portfolio->description }}</p>
                                             @endif
@@ -387,18 +390,28 @@
 
         <!-- Derde kolom - Portfolio Overzicht (zelfde structuur als eerste kolom) -->
         <div class="studenten-kolom bg-gray-100 dark:bg-gray-700 h-[600px] flex flex-col px-4">
-            <div class="flex items-center justify-between">
-                <h1 class="text-2xl font-bold mb-6 text-gray-900 dark:text-white">Portfolio Overzicht</h1>
-                @auth
-                    <div class="flex gap-2 mb-6">
-                        <a href="{{ route('portfolios.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-center">Nieuw Portfolio</a>
-                        <form action="{{ route('portfolios.resetAll') }}" method="POST" onsubmit="return confirm('Weet je zeker dat je alle portfolio\'s terug wilt zetten naar het overzicht?');">
-                            @csrf
-                            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Alle portfolio's terug naar overzicht</button>
-                        </form>
+            <div>
+                <h1 class="text-2xl font-bold mb-2 text-gray-900 dark:text-white">Portfolio Overzicht</h1>
+                @if(session('success_portfolio'))
+                    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded relative mb-2" role="alert">
+                        <span class="block sm:inline">{{ session('success_portfolio') }}</span>
                     </div>
-                @endauth
+                @endif
+                @if(session('error_portfolio'))
+                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded relative mb-2" role="alert">
+                        <span class="block sm:inline">{{ session('error_portfolio') }}</span>
+                    </div>
+                @endif
             </div>
+            @auth
+                <div class="flex gap-2 mb-6 mt-2">
+                    <a href="{{ route('portfolios.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-center">Nieuw Portfolio</a>
+                    <form action="{{ route('portfolios.resetAll') }}" method="POST" onsubmit="return confirm('Weet je zeker dat je alle portfolio\'s terug wilt zetten naar het overzicht?');">
+                        @csrf
+                        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Alle portfolio's terug naar overzicht</button>
+                    </form>
+                </div>
+            @endauth
 
             @if(isset($portfolios) && $portfolios->where('locations.*.name', 'all')->count() > 0 || $portfolios->count() > 0)
                 <div class="flex-1 overflow-y-auto ">
@@ -425,6 +438,9 @@
                                     "
                                 >
                                     <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">{{ $portfolio->title }}</h2>
+                                    @if(!empty($portfolio->subtitle))
+                                        <h3 class="text-md font-medium text-gray-800 dark:text-gray-100 mt-1">{{ $portfolio->subtitle }}</h3>
+                                    @endif
                                     @if(!empty($portfolio->description))
                                         <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">{{ $portfolio->description }}</p>
                                     @endif
@@ -876,9 +892,14 @@
         function handleClassroomDrop(e) {
             e.preventDefault();
             e.stopPropagation();
+
+            // Bewaar de dropzone referentie zodat we die ook in async code veilig kunnen gebruiken
+            const dropzone = e.currentTarget;
             
             // Verwijder visuele feedback
-            e.currentTarget.classList.remove('bg-blue-100', 'dark:bg-blue-900');
+            if (dropzone) {
+                dropzone.classList.remove('bg-blue-100', 'dark:bg-blue-900');
+            }
             
             const payloadText = e.dataTransfer.getData('application/json');
             if (!payloadText) {
@@ -895,7 +916,12 @@
                 return;
             }
             
-            const classroomId = e.currentTarget.dataset.classroomId;
+            if (!dropzone) {
+                console.log('No dropzone found on drop event');
+                return;
+            }
+
+            const classroomId = dropzone.dataset.classroomId;
             const studentId = payload.id;
             
             console.log('Dropping student', studentId, 'to classroom', classroomId);
@@ -928,10 +954,11 @@
                         const classroomStudentsContainer = document.getElementById(`classroom-students-${classroomId}`);
                         if (classroomStudentsContainer) {
                             // Update de student card styling voor in de klas
-                            studentCard.className = 'student-card bg-gray-100 dark:bg-gray-700 rounded p-2 text-sm cursor-move';
+                            // (maak hem "block" en "w-full" zodat hij niet smal/klein wordt)
+                            studentCard.className = 'block w-full student-card bg-gray-100 dark:bg-gray-700 rounded p-2 text-sm cursor-pointer cursor-move';
                             studentCard.dataset.classroomId = classroomId;
-                            const borderColor = e.currentTarget.dataset.classroomBorder;
-                            const borderColorDark = e.currentTarget.dataset.classroomBorderDark;
+                            const borderColor = dropzone.dataset.classroomBorder;
+                            const borderColorDark = dropzone.dataset.classroomBorderDark;
                             if (borderColor) {
                                 studentCard.dataset.classroomColorBorder = borderColor;
                             } else {

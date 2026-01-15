@@ -26,6 +26,11 @@
                 </div>
 
                 <div class="mb-4">
+                    <label for="subtitle" class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Tweede titel (optioneel):</label>
+                    <input type="text" name="subtitle" id="subtitle" value="{{ old('subtitle') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Voer een tweede titel in">
+                </div>
+
+                <div class="mb-4">
                     <label for="description" class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Beschrijving (optioneel):</label>
                     <textarea name="description" id="description" rows="4" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Korte beschrijving">{{ old('description') }}</textarea>
                 </div>

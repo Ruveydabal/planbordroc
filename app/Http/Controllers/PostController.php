@@ -61,9 +61,20 @@ class PostController extends Controller
             'opmerkingen' => 'nullable|string',
         ]);
 
+        // Verzamel alle aangevinkte p01–p08 opties
+        $pOptions = [];
+        for ($i = 1; $i <= 8; $i++) {
+            $key = 'p' . str_pad($i, 2, '0', STR_PAD_LEFT) . '_options';
+            $values = $request->input($key, []);
+            if (!empty($values)) {
+                $pOptions[$key] = array_values($values);
+            }
+        }
+
         if ($student) {
             $student->name = $validated['name'];
             $student->opmerkingen = $validated['opmerkingen'] ?? null;
+            $student->p_options = !empty($pOptions) ? $pOptions : null;
 
             if (array_key_exists('classroom_id', $validated)) {
                 if (!empty($validated['classroom_id'])) {
@@ -81,6 +92,7 @@ class PostController extends Controller
                 'name' => $validated['name'],
                 'opmerkingen' => $validated['opmerkingen'] ?? null,
                 'last_classroom_id' => $validated['classroom_id'],
+                'p_options' => !empty($pOptions) ? $pOptions : null,
             ]);
             $classroom = Classroom::find($validated['classroom_id']);
             if ($classroom) {

@@ -64,6 +64,133 @@
                             </select>
                         </div>
 
+                        <div class="mb-4 grid grid-cols-4 gap-8">
+                            <div class="space-y-4">
+                                {{-- Kolom 1: p01 en p02 --}}
+                                @for($i = 1; $i <= 2; $i++)
+                                <div>
+                                    <span class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">p{{ str_pad($i, 2, '0', STR_PAD_LEFT) }}:</span>
+                                    @php
+                                        $pKey = 'p' . str_pad($i, 2, '0', STR_PAD_LEFT) . '_options';
+                                        $savedOptions = $student->p_options[$pKey] ?? [];
+                                        $currentOptions = (array) old($pKey, $savedOptions);
+                                    @endphp
+                                    <div class="mt-2 flex gap-4">
+                                        <label class="inline-flex items-center text-gray-700 dark:text-gray-300">
+                                            <input type="checkbox" name="p{{ str_pad($i, 2, '0', STR_PAD_LEFT) }}_options[]" value="1" class="mr-2"
+                                                   {{ in_array('1', $currentOptions, true) ? 'checked' : '' }}>
+                                            <span>1</span>
+                                        </label>
+                                        <label class="inline-flex items-center text-gray-700 dark:text-gray-300">
+                                            <input type="checkbox" name="p{{ str_pad($i, 2, '0', STR_PAD_LEFT) }}_options[]" value="2" class="mr-2"
+                                                   {{ in_array('2', $currentOptions, true) ? 'checked' : '' }}>
+                                            <span>2</span>
+                                        </label>
+                                        @if(in_array($i, [2, 3, 7]))
+                                        <label class="inline-flex items-center text-gray-700 dark:text-gray-300">
+                                            <input type="checkbox" name="p{{ str_pad($i, 2, '0', STR_PAD_LEFT) }}_options[]" value="3" class="mr-2"
+                                                   {{ in_array('3', $currentOptions, true) ? 'checked' : '' }}>
+                                            <span>3</span>
+                                        </label>
+                                        @endif
+                                    </div>
+                                </div>
+                                @endfor
+                            </div>
+
+                            <div class="space-y-4">
+                                {{-- Kolom 2: p03 en p04 --}}
+                                @for($i = 3; $i <= 4; $i++)
+                                <div>
+                                    <span class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">p{{ str_pad($i, 2, '0', STR_PAD_LEFT) }}:</span>
+                                    @php
+                                        $pKey = 'p' . str_pad($i, 2, '0', STR_PAD_LEFT) . '_options';
+                                        $savedOptions = $student->p_options[$pKey] ?? [];
+                                        $currentOptions = (array) old($pKey, $savedOptions);
+                                    @endphp
+                                    <div class="mt-2 flex gap-4">
+                                        <label class="inline-flex items-center text-gray-700 dark:text-gray-300">
+                                            <input type="checkbox" name="p{{ str_pad($i, 2, '0', STR_PAD_LEFT) }}_options[]" value="1" class="mr-2"
+                                                   {{ in_array('1', $currentOptions, true) ? 'checked' : '' }}>
+                                            <span>1</span>
+                                        </label>
+                                        <label class="inline-flex items-center text-gray-700 dark:text-gray-300">
+                                            <input type="checkbox" name="p{{ str_pad($i, 2, '0', STR_PAD_LEFT) }}_options[]" value="2" class="mr-2"
+                                                   {{ in_array('2', $currentOptions, true) ? 'checked' : '' }}>
+                                            <span>2</span>
+                                        </label>
+                                        @if($i == 3)
+                                        <label class="inline-flex items-center text-gray-700 dark:text-gray-300">
+                                            <input type="checkbox" name="p{{ str_pad($i, 2, '0', STR_PAD_LEFT) }}_options[]" value="3" class="mr-2"
+                                                   {{ in_array('3', $currentOptions, true) ? 'checked' : '' }}>
+                                            <span>3</span>
+                                        </label>
+                                        @endif
+                                    </div>
+                                </div>
+                                @endfor
+                            </div>
+
+                            <div class="space-y-4">
+                                {{-- Kolom 3: p05 en p06 --}}
+                                @for($i = 5; $i <= 6; $i++)
+                                <div>
+                                    <span class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">p{{ str_pad($i, 2, '0', STR_PAD_LEFT) }}:</span>
+                                    @php
+                                        $pKey = 'p' . str_pad($i, 2, '0', STR_PAD_LEFT) . '_options';
+                                        $savedOptions = $student->p_options[$pKey] ?? [];
+                                        $currentOptions = (array) old($pKey, $savedOptions);
+                                    @endphp
+                                    <div class="mt-2 flex gap-4">
+                                        <label class="inline-flex items-center text-gray-700 dark:text-gray-300">
+                                            <input type="checkbox" name="p{{ str_pad($i, 2, '0', STR_PAD_LEFT) }}_options[]" value="1" class="mr-2"
+                                                   {{ in_array('1', $currentOptions, true) ? 'checked' : '' }}>
+                                            <span>1</span>
+                                        </label>
+                                        <label class="inline-flex items-center text-gray-700 dark:text-gray-300">
+                                            <input type="checkbox" name="p{{ str_pad($i, 2, '0', STR_PAD_LEFT) }}_options[]" value="2" class="mr-2"
+                                                   {{ in_array('2', $currentOptions, true) ? 'checked' : '' }}>
+                                            <span>2</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                @endfor
+                            </div>
+
+                            <div class="space-y-4">
+                                {{-- Kolom 4: p07 en p08 --}}
+                                @for($i = 7; $i <= 8; $i++)
+                                <div>
+                                    <span class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">p{{ str_pad($i, 2, '0', STR_PAD_LEFT) }}:</span>
+                                    @php
+                                        $pKey = 'p' . str_pad($i, 2, '0', STR_PAD_LEFT) . '_options';
+                                        $savedOptions = $student->p_options[$pKey] ?? [];
+                                        $currentOptions = (array) old($pKey, $savedOptions);
+                                    @endphp
+                                    <div class="mt-2 flex gap-4">
+                                        <label class="inline-flex items-center text-gray-700 dark:text-gray-300">
+                                            <input type="checkbox" name="p{{ str_pad($i, 2, '0', STR_PAD_LEFT) }}_options[]" value="1" class="mr-2"
+                                                   {{ in_array('1', $currentOptions, true) ? 'checked' : '' }}>
+                                            <span>1</span>
+                                        </label>
+                                        <label class="inline-flex items-center text-gray-700 dark:text-gray-300">
+                                            <input type="checkbox" name="p{{ str_pad($i, 2, '0', STR_PAD_LEFT) }}_options[]" value="2" class="mr-2"
+                                                   {{ in_array('2', $currentOptions, true) ? 'checked' : '' }}>
+                                            <span>2</span>
+                                        </label>
+                                        @if($i == 7)
+                                        <label class="inline-flex items-center text-gray-700 dark:text-gray-300">
+                                            <input type="checkbox" name="p{{ str_pad($i, 2, '0', STR_PAD_LEFT) }}_options[]" value="3" class="mr-2"
+                                                   {{ in_array('3', $currentOptions, true) ? 'checked' : '' }}>
+                                            <span>3</span>
+                                        </label>
+                                        @endif
+                                    </div>
+                                </div>
+                                @endfor
+                            </div>
+                        </div>
+
                         <div class="mb-4">
                             <label for="opmerkingen" class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Opmerkingen (optioneel):</label>
                             <textarea name="opmerkingen" id="opmerkingen" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline">{{ old('opmerkingen', $student->opmerkingen) }}</textarea>

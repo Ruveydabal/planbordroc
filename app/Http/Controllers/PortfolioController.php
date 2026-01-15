@@ -23,6 +23,7 @@ class PortfolioController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
+            'subtitle' => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'link' => 'nullable|url|max:255',
         ]);
@@ -41,7 +42,7 @@ class PortfolioController extends Controller
         $maxOrder = \App\Models\Portfolio::max('sort_order') ?? 0;
         $portfolio->update(['sort_order' => $maxOrder + 1]);
 
-        return redirect()->route('posts.index')->with('success', 'Portfolio succesvol toegevoegd!');
+        return redirect()->route('posts.index')->with('success_portfolio', 'Portfolio succesvol toegevoegd!');
     }
 
     public function edit(Portfolio $portfolio)
@@ -56,19 +57,20 @@ class PortfolioController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
+            'subtitle' => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'link' => 'nullable|url|max:255',
         ]);
 
         $portfolio->update($validated);
 
-        return redirect()->route('posts.index')->with('success', 'Portfolio succesvol bijgewerkt!');
+        return redirect()->route('posts.index')->with('success_portfolio', 'Portfolio succesvol bijgewerkt!');
     }
 
     public function destroy(Portfolio $portfolio)
     {
         $portfolio->delete();
-        return redirect()->route('posts.index')->with('success', 'Portfolio succesvol verwijderd!');
+        return redirect()->route('posts.index')->with('success_portfolio', 'Portfolio succesvol verwijderd!');
     }
 
     public function reorder(Request $request)
@@ -113,13 +115,13 @@ class PortfolioController extends Controller
     {
         $allLocation = Location::where('name', 'all')->first();
         if (!$allLocation) {
-            return redirect()->route('posts.index')->with('error', 'Locatie "all" niet gevonden.');
+            return redirect()->route('posts.index')->with('error_portfolio', 'Locatie "all" niet gevonden.');
         }
         $portfolios = Portfolio::all();
         foreach ($portfolios as $portfolio) {
             $portfolio->locations()->sync([$allLocation->id]);
         }
-        return redirect()->route('posts.index')->with('success', 'Alle portfolio\'s zijn teruggezet naar het overzicht.');
+        return redirect()->route('posts.index')->with('success_portfolio', 'Alle portfolio\'s zijn teruggezet naar het overzicht.');
     }
 }
 

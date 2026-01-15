@@ -12,6 +12,11 @@ class Student extends Model
         'name',
         'opmerkingen',
         'last_classroom_id',
+        'p_options',
+    ];
+
+    protected $casts = [
+        'p_options' => 'array',
     ];
 
     public function locations()
