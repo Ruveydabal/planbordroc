@@ -13,7 +13,12 @@ class PostController extends Controller
     {
         $students = Student::with('locations')->get();
         $locations = Location::all();
-        $portfolios = Portfolio::with('locations')->orderBy('sort_order')->get();
+        // Haal portfolios op en sorteer op sort_order (null komt onderaan)
+        $portfolios = Portfolio::with('locations')
+            ->orderByRaw('CASE WHEN sort_order IS NULL THEN 1 ELSE 0 END') // Null eerst
+            ->orderBy('sort_order', 'asc')
+            ->orderBy('id', 'asc')
+            ->get();
         $classrooms = Classroom::with(['students.locations'])->get();
         return view('posts.index', [
             'students' => $students,

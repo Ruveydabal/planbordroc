@@ -26,7 +26,13 @@ class PortfolioController extends Controller
             'subtitle' => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'link' => 'nullable|url|max:255',
+            'color_index' => 'nullable|integer|min:0|max:7',
         ]);
+
+        // Standaard color_index op 0 als niet opgegeven
+        if (!isset($validated['color_index'])) {
+            $validated['color_index'] = 0;
+        }
 
         // Maak portfolio aan
         $portfolio = Portfolio::create($validated);
@@ -60,6 +66,7 @@ class PortfolioController extends Controller
             'subtitle' => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'link' => 'nullable|url|max:255',
+            'color_index' => 'nullable|integer|min:0|max:7',
         ]);
 
         $portfolio->update($validated);
@@ -81,9 +88,28 @@ class PortfolioController extends Controller
         ]);
 
         // Update sort_order in een transactie
+        // Alleen portfolios die in de 'all' locatie staan worden gesorteerd
         \DB::transaction(function () use ($validated) {
-            foreach ($validated['order'] as $index => $id) {
-                Portfolio::where('id', $id)->update(['sort_order' => $index + 1]);
+            $allLocation = Location::where('name', 'all')->first();
+            
+            if ($allLocation) {
+                // Update sort_order voor portfolios in de volgorde (1,2,3,...)
+                // We controleren eerst of het portfolio in 'all' locatie staat
+                foreach ($validated['order'] as $index => $id) {
+                    $portfolio = Portfolio::with('locations')->find($id);
+                    if ($portfolio) {
+                        // Controleer of portfolio in 'all' locatie staat
+                        $isInAll = $portfolio->locations->contains(function($location) use ($allLocation) {
+                            return $location->id === $allLocation->id;
+                        });
+                        
+                        if ($isInAll) {
+                            // Update sort_order: index + 1 (dus 1, 2, 3, ...)
+                            $portfolio->sort_order = $index + 1;
+                            $portfolio->save();
+                        }
+                    }
+                }
             }
         });
 
@@ -98,6 +124,14 @@ class PortfolioController extends Controller
 
             $portfolio->locations()->detach();
             $portfolio->locations()->attach($location->id);
+
+            // Als portfolio naar 'all' locatie wordt verplaatst en geen sort_order heeft, geef het een sort_order
+            if ($location->name === 'all' && !$portfolio->sort_order) {
+                $maxOrder = Portfolio::whereHas('locations', function($q) use ($location) {
+                    $q->where('locations.id', $location->id);
+                })->max('sort_order') ?? 0;
+                $portfolio->update(['sort_order' => $maxOrder + 1]);
+            }
 
             return response()->json([
                 'success' => true,

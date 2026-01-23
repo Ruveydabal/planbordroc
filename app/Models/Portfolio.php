@@ -15,6 +15,7 @@ class Portfolio extends Model
         'description',
         'link',
         'sort_order',
+        'color_index',
     ];
 
     public function locations()

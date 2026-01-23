@@ -343,7 +343,8 @@
                                 @foreach($portfolios as $portfolio)
                                     @if($portfolio->locations && $portfolio->locations->where('name', $location->name)->count() > 0)
                                         @php
-                                            $portfolioColors = $portfolioPalette[(($portfolio->id ?? 1) - 1) % count($portfolioPalette)];
+                                            $colorIndex = $portfolio->color_index ?? (($portfolio->id ?? 1) - 1) % count($portfolioPalette);
+                                            $portfolioColors = $portfolioPalette[$colorIndex];
                                         @endphp
                                 <div
                                             class="student-card portfolio-color-card rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-300 w-full mb-2"
@@ -416,13 +417,20 @@
             @if(isset($portfolios) && $portfolios->where('locations.*.name', 'all')->count() > 0 || $portfolios->count() > 0)
                 <div class="flex-1 overflow-y-auto ">
                     <div id="all-portfolios" class="kamer-dropzone grid grid-cols-1 gap-4 min-h-[100px]" data-section="portfolio" data-location="all">
-                        @foreach($portfolios as $portfolio)
-                            @php
-                                $inAll = $portfolio->locations && $portfolio->locations->where('name', 'all')->count() > 0;
-                            @endphp
-                            @if($inAll)
+                        @php
+                            // Filter en sorteer portfolios die in 'all' locatie staan
+                            $portfoliosInAll = $portfolios->filter(function($portfolio) {
+                                return $portfolio->locations && $portfolio->locations->where('name', 'all')->count() > 0;
+                            })->sortBy(function($portfolio) {
+                                // Sorteer op sort_order (1, 2, 3, ...)
+                                // Portfolios zonder sort_order (null) komen onderaan door een hoge waarde te gebruiken
+                                return $portfolio->sort_order ?? 999999;
+                            })->values();
+                        @endphp
+                        @foreach($portfoliosInAll as $portfolio)
                                 @php
-                                    $portfolioColors = $portfolioPalette[(($portfolio->id ?? 1) - 1) % count($portfolioPalette)];
+                                    $colorIndex = $portfolio->color_index ?? (($portfolio->id ?? 1) - 1) % count($portfolioPalette);
+                                    $portfolioColors = $portfolioPalette[$colorIndex];
                                 @endphp
                                 <div
                                     class="student-card portfolio-color-card rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-300 w-full mb-2"
@@ -458,7 +466,6 @@
                                         </div>
                                     @endauth
                                 </div>
-                            @endif
                         @endforeach
                     </div>
                 </div>
@@ -587,7 +594,9 @@
     document.addEventListener('DOMContentLoaded', function() {
         const studentCards = document.querySelectorAll('.student-card[data-student-id]');
         const portfolioCards = document.querySelectorAll('.student-card[data-portfolio-id]');
-        const dropzones = document.querySelectorAll('.kamer-dropzone, .classroom-dropzone');
+        // NB: #all-portfolios gebruiken we NIET als dropzone voor HTML5 drag&drop,
+        // want SortableJS regelt daar het slepen/sorteren (anders conflicten).
+        const dropzones = document.querySelectorAll('.kamer-dropzone:not(#all-portfolios), .classroom-dropzone');
         const allPortfoliosZone = document.getElementById('all-portfolios');
         const portfolioColumnWrapper = allPortfoliosZone ? allPortfoliosZone.closest('.studenten-kolom') : null;
 
@@ -730,6 +739,8 @@
             });
         });
 
+        // Portfolio cards: maak allemaal draggable voor locatie verplaatsing
+        // SortableJS zal binnen #all-portfolios werken voor sorteren, maar HTML5 drag-and-drop blijft werken voor verplaatsen tussen locaties
         portfolioCards.forEach(card => {
             card.setAttribute('draggable', true);
             card.addEventListener('dragstart', handleDragStart);
@@ -740,6 +751,8 @@
             zone.addEventListener('dragover', handleDragOver);
             zone.addEventListener('drop', handleDrop);
         });
+        
+        // Voeg ook drop handlers toe aan all-portfolios voor verplaatsen tussen locaties
         if (allPortfoliosZone && !allPortfoliosZone._dndBound) {
             allPortfoliosZone.addEventListener('dragover', handleDragOver);
             allPortfoliosZone.addEventListener('drop', handleDrop);
@@ -765,6 +778,8 @@
                     preventDefault: ()=>{},
                     stopPropagation: ()=>{},
                     dataTransfer: { getData: ()=>payloadText },
+                    // LET OP: dit dropgedrag is alleen bedoeld om portfolios/studenten
+                    // naar "all" te verplaatsen. Sorteren gebeurt via SortableJS.
                     currentTarget: allPortfoliosZone,
                     target: allPortfoliosZone
                 };
@@ -773,8 +788,90 @@
             portfolioColumnWrapper._dndBound = true;
         }
 
+        // SortableJS voor portfolio sortering binnen het overzicht
+        // Alleen voor sorteren binnen #all-portfolios
+        // HTML5 drag-and-drop blijft werken voor verplaatsen tussen locaties
+        if (allPortfoliosZone && typeof Sortable !== 'undefined') {
+            const portfolioSortable = new Sortable(allPortfoliosZone, {
+                animation: 150,
+                ghostClass: 'opacity-50',
+                chosenClass: 'ring-2 ring-blue-500',
+                filter: 'a, button', // Voorkom sorteren bij klikken op links/knoppen
+                preventOnFilter: false,
+                draggable: '[data-portfolio-id]', // Alleen portfolio cards zijn draggable
+                forceFallback: true, // Gebruik fallback voor betere compatibiliteit
+                fallbackOnBody: true, // Laat toe om buiten de container te slepen voor verplaatsen tussen locaties
+                swapThreshold: 0.65, // Vereis meer beweging voordat items worden verwisseld
+                onStart: function(evt) {
+                    // Markeer dat we aan het sorteren zijn
+                    evt.item.classList.add('sortable-dragging');
+                },
+                onEnd: function(evt) {
+                    evt.item.classList.remove('sortable-dragging');
+                    
+                    // Alleen sorteren als het binnen dezelfde container blijft (all-portfolios)
+                    // Als het naar een andere locatie wordt verplaatst, laat HTML5 drag-and-drop het afhandelen
+                    if (evt.from === evt.to && evt.from.id === 'all-portfolios') {
+                        // Wacht even zodat DOM is bijgewerkt
+                        setTimeout(function() {
+                            // Verzamel alle portfolio IDs in de volgorde zoals ze nu in de DOM staan
+                            const portfolioIds = [];
+                            const portfolioCards = allPortfoliosZone.querySelectorAll('[data-portfolio-id]');
+                            
+                            portfolioCards.forEach(function(card) {
+                                const id = parseInt(card.dataset.portfolioId);
+                                if (!isNaN(id)) {
+                                    portfolioIds.push(id);
+                                }
+                            });
+
+                            console.log('Nieuwe portfolio volgorde:', portfolioIds);
+                            console.log('Aantal portfolios:', portfolioIds.length);
+
+                            if (portfolioIds.length > 0) {
+                                fetch('/portfolios/reorder', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                                    },
+                                    body: JSON.stringify({ order: portfolioIds })
+                                })
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error('Network response was not ok: ' + response.status);
+                                    }
+                                    return response.json();
+                                })
+                                .then(data => {
+                                    if (data.success) {
+                                        console.log('Portfolio volgorde succesvol bijgewerkt');
+                                        // De DOM is al bijgewerkt door SortableJS, dus de volgorde is zichtbaar
+                                        // Na refresh zal de volgorde correct zijn omdat sort_order is opgeslagen
+                                    } else {
+                                        console.error('Fout bij sorteren portfolios:', data);
+                                        alert('Er is een fout opgetreden bij het sorteren. De pagina wordt herladen.');
+                                        window.location.reload();
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error:', error);
+                                    alert('Er is een fout opgetreden bij het sorteren: ' + error.message);
+                                    window.location.reload();
+                                });
+                            }
+                        }, 150);
+                    }
+                }
+            });
+        }
+
         function handleDragStart(e) {
             const el = e.currentTarget;
+            // Als SortableJS actief is voor dit element, laat SortableJS het afhandelen
+            if (el.classList.contains('sortable-dragging')) {
+                return;
+            }
             el.classList.add('opacity-50');
             const dataset = el.dataset;
             const payload = dataset.studentId ? JSON.stringify({ type: 'student', id: dataset.studentId }) : JSON.stringify({ type: 'portfolio', id: dataset.portfolioId });
@@ -786,6 +883,10 @@
 
         function handleDragEnd(e) {
             const el = e.currentTarget;
+            // Als SortableJS actief is voor dit element, laat SortableJS het afhandelen
+            if (el.classList.contains('sortable-dragging')) {
+                return;
+            }
             el.classList.remove('opacity-50');
             window.__currentDragType = undefined;
             
